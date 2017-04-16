@@ -29,14 +29,14 @@ class Controller extends Actor with ActorLogging {
             log.info("Finished scraping {}", result.uri.toString)
             log.info("Links found: {}", result.links.toString())
             if (state.isLeaf) storageActor ! Store(result)
-            result.links.foreach { link =>
-                self ! Scrape(link, state.next)
-            }
-            withScrapers(scraperActors - sender, storageActor)
+            val newScrapers = scrapeLinks(state.next, result.links)
+            withScrapers(scraperActors ++ newScrapers - sender, storageActor)
         }
 
         case StorageReady(storage) => {
-            log.info(storage.toString())
+            log.info(storage.mapValues(_.document.title).toString())
+            context.stop(self)
+            context.system.terminate()
         }
 
         case Status.Failure(cause) => {
@@ -45,10 +45,18 @@ class Controller extends Actor with ActorLogging {
         }
     }
 
+    private def scrapeLinks(state: ScraperState, links: List[URI]): List[ActorRef] = {
+        for (link <- links) yield {
+            val scraper = context.actorOf(Props(new ScraperActor))
+            scraper ! ScraperActor.Scrape(link, state)
+            scraper
+        }
+    }
+
     private def withScrapers(scrapers: Set[ActorRef], storageActor: ActorRef): Unit = {
         context become active(scrapers, storageActor)
         if (scrapers.isEmpty) {
-            //storageActor ! Done
+            storageActor ! Done
         }
     }
 }

@@ -4,8 +4,6 @@ import java.net.URI
 
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
-import net.ruippeixotog.scalascraper.dsl.DSL.Parse._
-import net.ruippeixotog.scalascraper.model.Element
 
 import scala.util.Try
 
@@ -34,6 +32,6 @@ class CssSelectorLinkExtractor(selector: String) extends LinkExtractor {
         links.flatMap { link =>
             val tryAbsoluteUri = Try { baseURI.resolve(link.attr("href").trim) }
             tryAbsoluteUri.map(List(_)).getOrElse(Nil)
-        }.take(1)
+        }.take(3)
     }
 }

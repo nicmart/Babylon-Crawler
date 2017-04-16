@@ -16,7 +16,7 @@ trait Scraper {
 
 object Scraper {
     def apply(browser: Browser, linkExtractor: LinkExtractor): Scraper = new Scraper {
-        override def scrape(uri: URI) = browser.get(uri).map { browserResponse =>
+        def scrape(uri: URI) = browser.get(uri).map { browserResponse =>
             ScraperResult(
                 browserResponse.uri,
                 browserResponse.document,

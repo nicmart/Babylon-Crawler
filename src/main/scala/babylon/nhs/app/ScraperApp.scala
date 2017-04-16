@@ -16,7 +16,7 @@ object ScraperApp extends App {
 
     val scraperState = new FromLinkExtractorsScraperState(new Browser, List(
         //new CssSelectorLinkExtractor("#haz-mod1 a"),#haz-mod1 > ul > li:nth-child(1) > a
-        new CssSelectorLinkExtractor("#haz-mod1 > ul > li:nth-child(1) > a"),
+        new CssSelectorLinkExtractor("#haz-mod1 a"),
         new CssSelectorLinkExtractor("#ctl00_PlaceHolderMain_BodyMap_ConditionsByAlphabet a")
     ))
 
