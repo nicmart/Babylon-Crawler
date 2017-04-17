@@ -1,11 +1,16 @@
 package babylon.nhs.app
 
+import java.io.{File, FileWriter}
 import java.net.URI
 
 import akka.actor.{ActorSystem, Props}
-import babylon.nhs.actor.Controller
-import Controller._
+import babylon.nhs.actor.Supervisor.Start
+import babylon.nhs.actor.Supervisor
+import babylon.nhs.browser.Browser
+import babylon.nhs.output.Output.PageList
 import babylon.nhs.scraper._
+import babylon.nhs.serialiser.JsonStorageSerialiser
+import babylon.nhs.writer.{JavaFileWriter, SerialiserWriter, Writer}
 
 /**
   * Created by nic on 13/04/2017.
@@ -13,15 +18,20 @@ import babylon.nhs.scraper._
 object ScraperApp extends App {
 
     val url = new URI("http://www.nhs.uk/Conditions/Pages/hub.aspx")
+    val filename = "pages.json"
 
-    val scraperState = new FromLinkExtractorsScraperState(new Browser, List(
-        //new CssSelectorLinkExtractor("#haz-mod1 a"),#haz-mod1 > ul > li:nth-child(1) > a
+    val scraperState = new LinkExtractorsScraperState(new Browser, List(
         new CssSelectorLinkExtractor("#haz-mod1 a"),
         new CssSelectorLinkExtractor("#ctl00_PlaceHolderMain_BodyMap_ConditionsByAlphabet a")
     ))
 
-    val system = ActorSystem("nhs-scraper")
-    val controller = system.actorOf(Props(new Controller), "controller")
+    val writer: Writer[PageList] = new SerialiserWriter(
+        JsonStorageSerialiser,
+        new JavaFileWriter(new FileWriter(new File(filename)))
+    )
 
-    controller ! Scrape(url, scraperState)
+    val system = ActorSystem("nhs-scraper")
+    val supervisor = system.actorOf(Props(new Supervisor(writer)), "supervisor")
+
+    supervisor ! Start(url, scraperState)
 }

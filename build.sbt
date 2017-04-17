@@ -1,5 +1,7 @@
 import Dependencies._
 
+val circeVersion = "0.7.0"
+
 lazy val root = (project in file(".")).
   settings(
     inThisBuild(List(
@@ -11,6 +13,9 @@ lazy val root = (project in file(".")).
     libraryDependencies ++= List(
         scalaTest % Test,
         "net.ruippeixotog" %% "scala-scraper" % "1.2.0",
-        "com.typesafe.akka" %% "akka-actor" % "2.5.0"
+        "com.typesafe.akka" %% "akka-actor" % "2.5.0",
+        "io.circe" %% "circe-core" % circeVersion,
+        "io.circe" %% "circe-generic" % circeVersion,
+        "io.circe" %% "circe-parser" % circeVersion
     )
   )

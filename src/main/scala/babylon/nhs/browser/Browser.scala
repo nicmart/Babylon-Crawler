@@ -1,11 +1,11 @@
-package babylon.nhs.scraper
+package babylon.nhs.browser
 
 import java.net.URI
 
+import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.model.Document
 
 import scala.concurrent.{ExecutionContext, Future}
-import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 
 /**
   * Created by nic on 13/04/2017.

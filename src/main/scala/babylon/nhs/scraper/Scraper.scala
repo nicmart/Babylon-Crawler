@@ -2,6 +2,7 @@ package babylon.nhs.scraper
 
 import java.net.URI
 
+import babylon.nhs.browser.Browser
 import net.ruippeixotog.scalascraper.model.Document
 
 import scala.concurrent.Future
@@ -14,9 +15,9 @@ trait Scraper {
     def scrape(uri: URI): Future[ScraperResult]
 }
 
-object Scraper {
-    def apply(browser: Browser, linkExtractor: LinkExtractor): Scraper = new Scraper {
-        def scrape(uri: URI) = browser.get(uri).map { browserResponse =>
+case class LinkExtractorScraper(browser: Browser, linkExtractor: LinkExtractor) extends Scraper {
+    def scrape(uri: URI): Future[ScraperResult] = {
+        browser.get(uri).map { browserResponse =>
             ScraperResult(
                 browserResponse.uri,
                 browserResponse.document,

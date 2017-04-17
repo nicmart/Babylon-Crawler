@@ -2,6 +2,7 @@ package babylon.nhs.scraper
 
 import java.net.URI
 
+import babylon.nhs.browser.BrowserResponse
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 
@@ -32,6 +33,6 @@ class CssSelectorLinkExtractor(selector: String) extends LinkExtractor {
         links.flatMap { link =>
             val tryAbsoluteUri = Try { baseURI.resolve(link.attr("href").trim) }
             tryAbsoluteUri.map(List(_)).getOrElse(Nil)
-        }.take(3)
+        }.take(4)
     }
 }

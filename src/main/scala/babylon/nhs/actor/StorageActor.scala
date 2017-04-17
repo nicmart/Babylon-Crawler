@@ -1,32 +1,36 @@
 package babylon.nhs.actor
 
-import java.net.URI
-
 import akka.actor.{Actor, ActorLogging}
-import babylon.nhs.actor.Controller.StorageReady
-import babylon.nhs.actor.StorageActor.{Done, Store}
+import babylon.nhs.actor.StorageActor.{GetStorage, Store}
+import babylon.nhs.actor.Supervisor.StorageReady
 import babylon.nhs.scraper.ScraperResult
-
+import babylon.nhs.output.Output.{PageElement, PageList}
+import net.ruippeixotog.scalascraper.dsl.DSL._
+import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 /**
   * Created by nic on 15/04/2017.
   */
 class StorageActor extends Actor with ActorLogging {
-    def receive: Receive = active(Map.empty)
-    def active(pages: Map[URI, ScraperResult]): Receive = {
+    def receive: Receive = active(List.empty)
+    def active(pages: PageList): Receive = {
         case Store(result) =>
             log.info("Storing result for {}", result.uri.toString)
-            val updatePages = pages + (result.uri -> result)
-            context become active(updatePages)
-        case Done =>
+            context become active(pageElement(result) :: pages)
+        case GetStorage =>
             sender ! StorageReady(pages)
-            context.stop(self)
     }
+
+    private def pageElement(result: ScraperResult) = PageElement(
+        result.uri.toString,
+        result.document.title,
+        result.document >> allText(".main-content")
+    )
 }
 
 object StorageActor {
     sealed trait Message
     case class Store(result: ScraperResult) extends Message
-    case object Done extends Message
+    case object GetStorage extends Message
 }
 
 

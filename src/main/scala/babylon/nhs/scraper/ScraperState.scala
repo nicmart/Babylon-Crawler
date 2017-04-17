@@ -1,5 +1,7 @@
 package babylon.nhs.scraper
 
+import babylon.nhs.browser.Browser
+
 /**
   * Created by nic on 15/04/2017.
   */
@@ -10,7 +12,7 @@ trait ScraperState {
     def isLeaf: Boolean
 }
 
-class FromLinkExtractorsScraperState(
+class LinkExtractorsScraperState(
     browser: Browser,
     extractors: List[LinkExtractor],
     val depth: Int = 0
@@ -20,10 +22,10 @@ class FromLinkExtractorsScraperState(
         case _ => extractors
     }
 
-    def scraper: Scraper = Scraper(browser, linkExtractors.head)
+    def scraper: Scraper = LinkExtractorScraper(browser, linkExtractors.head)
 
     def isLeaf: Boolean = extractors.isEmpty
 
     def next: ScraperState =
-        new FromLinkExtractorsScraperState(browser, linkExtractors.tail, depth + 1)
+        new LinkExtractorsScraperState(browser, linkExtractors.tail, depth + 1)
 }
