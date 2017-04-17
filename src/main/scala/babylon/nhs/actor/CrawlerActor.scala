@@ -7,7 +7,7 @@ import akka.stream.ActorMaterializer
 
 import scala.concurrent.duration._
 import babylon.nhs.actor.ProxyActor.Message
-import babylon.nhs.actor.SupervisorActor.DoneCrawling
+import babylon.nhs.actor.SupervisorActor.CrawlingDone
 import babylon.nhs.scraper._
 import CrawlerActor._
 
@@ -31,7 +31,7 @@ class CrawlerActor extends Actor with ActorLogging {
         case StartCrawling(uri, state) => {
             log.info("Starting scraping {}", uri.toString)
             log.info("{} active scrapers", crawlerState.activeScrapers.size)
-            to(scrapeLinks(crawlerState, state, List(uri)))
+            changeState(scrapeLinks(crawlerState, state, List(uri)))
         }
 
         case Scraped(result, state) => {
@@ -39,7 +39,7 @@ class CrawlerActor extends Actor with ActorLogging {
             log.info("{} active scrapers", crawlerState.activeScrapers.size)
             log.info("Links found: {}", result.links.toString())
             context.parent ! SupervisorActor.Scraped(result, state)
-            to(scrapeLinks(crawlerState.visit(result.uri), state.next(result), result.links))
+            changeState(scrapeLinks(crawlerState.visit(result.uri), state.next(result), result.links))
         }
 
         case Status.Failure(cause) => {
@@ -51,7 +51,7 @@ class CrawlerActor extends Actor with ActorLogging {
             for (scraper <- crawlerState.activeScrapers.values) {
                 context.stop(scraper)
             }
-            to(crawlerState.copy(activeScrapers = Map.empty))
+            changeState(crawlerState.copy(activeScrapers = Map.empty))
     }
 
     private def scrapeLinks(
@@ -68,10 +68,10 @@ class CrawlerActor extends Actor with ActorLogging {
         }
     }
 
-    private def to(crawlerState: CrawlerState): Unit = {
+    private def changeState(crawlerState: CrawlerState): Unit = {
         context become active(crawlerState)
         if (crawlerState.activeScrapers.isEmpty) {
-            context.parent ! DoneCrawling
+            context.parent ! CrawlingDone
         }
     }
 }

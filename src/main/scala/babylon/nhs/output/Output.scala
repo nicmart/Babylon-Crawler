@@ -5,5 +5,6 @@ package babylon.nhs.output
   */
 object Output {
     type PageList = List[PageElement]
-    final case class PageElement(url: String, title: String, content: String, ancestors: List[String])
 }
+
+final case class PageElement(url: String, title: String, content: String, ancestors: List[String])
