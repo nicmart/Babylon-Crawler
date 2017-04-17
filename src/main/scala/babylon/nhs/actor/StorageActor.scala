@@ -2,7 +2,7 @@ package babylon.nhs.actor
 
 import akka.actor.{Actor, ActorLogging}
 import babylon.nhs.actor.StorageActor.{GetStorage, Store}
-import babylon.nhs.actor.Supervisor.StorageReady
+import babylon.nhs.actor.SupervisorActor.StorageReady
 import babylon.nhs.scraper.ScraperResult
 import babylon.nhs.output.Output.{PageElement, PageList}
 import net.ruippeixotog.scalascraper.dsl.DSL._

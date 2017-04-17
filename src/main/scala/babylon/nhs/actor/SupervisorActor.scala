@@ -3,7 +3,7 @@ package babylon.nhs.actor
 import java.net.URI
 
 import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props}
-import babylon.nhs.actor.Crawler.StartCrawling
+import babylon.nhs.actor.CrawlerActor.StartCrawling
 import babylon.nhs.actor.DumperActor.Dump
 import babylon.nhs.actor.StorageActor.{GetStorage, Store}
 import babylon.nhs.scraper.{ScraperResult, ScraperState}
@@ -16,10 +16,10 @@ import babylon.nhs.output.Output.PageList
 /**
   * Created by Nicolò Martini on 17/04/2017.
   */
-class Supervisor(writer: Writer[PageList]) extends Actor with ActorLogging {
-    import Supervisor._
+class SupervisorActor(writer: Writer[PageList]) extends Actor with ActorLogging {
+    import SupervisorActor._
 
-    val crawler: ActorRef = context.actorOf(Props(new Crawler), "crawler")
+    val crawler: ActorRef = context.actorOf(Props(new CrawlerActor), "crawler")
     val store: ActorRef = context.actorOf(Props(new StorageActor), "storage")
     val dumper: ActorRef = context.actorOf(
         Props(new DumperActor(writer)),
@@ -44,7 +44,7 @@ class Supervisor(writer: Writer[PageList]) extends Actor with ActorLogging {
     }
 }
 
-object Supervisor {
+object SupervisorActor {
     sealed trait Message
     case class Start(uri: URI, state: ScraperState) extends Message
     case class Scraped(result: ScraperResult, state: ScraperState) extends Message

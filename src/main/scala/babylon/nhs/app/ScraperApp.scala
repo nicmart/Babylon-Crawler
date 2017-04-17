@@ -4,8 +4,8 @@ import java.io.{File, FileWriter}
 import java.net.URI
 
 import akka.actor.{ActorSystem, Props}
-import babylon.nhs.actor.Supervisor.Start
-import babylon.nhs.actor.Supervisor
+import babylon.nhs.actor.SupervisorActor.Start
+import babylon.nhs.actor.SupervisorActor
 import babylon.nhs.browser.Browser
 import babylon.nhs.output.Output.PageList
 import babylon.nhs.scraper._
@@ -31,7 +31,7 @@ object ScraperApp extends App {
     )
 
     val system = ActorSystem("nhs-scraper")
-    val supervisor = system.actorOf(Props(new Supervisor(writer)), "supervisor")
+    val supervisor = system.actorOf(Props(new SupervisorActor(writer)), "supervisor")
 
     supervisor ! Start(url, scraperState)
 }

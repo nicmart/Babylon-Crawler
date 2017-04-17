@@ -4,15 +4,18 @@ import java.net.URI
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.actor.Status
-import babylon.nhs.actor.Supervisor.DoneCrawling
+import babylon.nhs.actor.ProxyActor.Message
+import babylon.nhs.actor.SupervisorActor.DoneCrawling
 import babylon.nhs.scraper._
 
 /**
   * Created by nic on 15/04/2017.
   */
-class Crawler extends Actor with ActorLogging {
+class CrawlerActor extends Actor with ActorLogging {
 
-    import Crawler._
+    import CrawlerActor._
+
+    val scrapersProxy = context.actorOf(Props(new ProxyActor))
 
     def receive: Receive = active(CrawlerState())
 
@@ -26,7 +29,7 @@ class Crawler extends Actor with ActorLogging {
         case Scraped(result, state) => {
             log.info("Finished scraping {}", result.uri.toString)
             log.info("Links found: {}", result.links.toString())
-            context.parent ! Supervisor.Scraped(result, state)
+            context.parent ! SupervisorActor.Scraped(result, state)
             val newScrapers = scrapeLinks(crawlerState, state.next, result.links)
 
             to(
@@ -44,8 +47,8 @@ class Crawler extends Actor with ActorLogging {
 
     private def scrapeLinks(crawlerState: CrawlerState, state: ScraperState, links: List[URI]): List[ActorRef] = {
         for (link <- links if !crawlerState.isVisited(link)) yield {
-            val scraper = context.actorOf(Props(new ScraperActor), s"scraper-${link.hashCode().toString}")
-            scraper ! ScraperActor.Scrape(link, state)
+            val scraper = context.actorOf(Props(new ScraperActor))
+            scrapersProxy ! ProxyActor.Message(scraper, ScraperActor.Scrape(link, state), self)
             scraper
         }
     }
@@ -58,7 +61,7 @@ class Crawler extends Actor with ActorLogging {
     }
 }
 
-object Crawler {
+object CrawlerActor {
     sealed trait Message
     case class StartCrawling(uri: URI, state: ScraperState) extends Message
     case class Scraped(result: ScraperResult, state: ScraperState) extends Message
@@ -71,8 +74,8 @@ object Crawler {
             copy(activeScrapers = scrapers)
 
         def withLink(uri: URI): CrawlerState =
-            copy(visitedLinks = visitedLinks + uri.normalize())
+            copy(visitedLinks = visitedLinks + uri)
 
-        def isVisited(uri: URI): Boolean = visitedLinks.contains(uri.normalize())
+        def isVisited(uri: URI): Boolean = visitedLinks.contains(uri)
     }
 }

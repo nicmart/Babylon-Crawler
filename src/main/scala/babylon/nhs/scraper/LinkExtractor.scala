@@ -31,7 +31,7 @@ class CssSelectorLinkExtractor(selector: String) extends LinkExtractor {
         val document = browserResponse.document
         val links = document >> elementList(selector)
         links.flatMap { link =>
-            val tryAbsoluteUri = Try { baseURI.resolve(link.attr("href").trim) }
+            val tryAbsoluteUri = Try { baseURI.resolve(link.attr("href").trim).normalize() }
             tryAbsoluteUri.map(List(_)).getOrElse(Nil)
         }.take(4)
     }

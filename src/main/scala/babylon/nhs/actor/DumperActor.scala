@@ -1,7 +1,7 @@
 package babylon.nhs.actor
 
 import akka.actor.{Actor, ActorLogging}
-import babylon.nhs.actor.Supervisor.DumpReady
+import babylon.nhs.actor.SupervisorActor.DumpReady
 import babylon.nhs.output.Output.PageList
 import babylon.nhs.writer.Writer
 
