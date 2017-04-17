@@ -33,6 +33,6 @@ class CssSelectorLinkExtractor(selector: String) extends LinkExtractor {
         links.flatMap { link =>
             val tryAbsoluteUri = Try { baseURI.resolve(link.attr("href").trim).normalize() }
             tryAbsoluteUri.map(List(_)).getOrElse(Nil)
-        }.take(4)
+        }
     }
 }

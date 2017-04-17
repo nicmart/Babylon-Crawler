@@ -14,6 +14,7 @@ lazy val root = (project in file(".")).
         scalaTest % Test,
         "net.ruippeixotog" %% "scala-scraper" % "1.2.0",
         "com.typesafe.akka" %% "akka-actor" % "2.5.0",
+        "com.typesafe.akka" %% "akka-stream" % "2.5.0",
         "io.circe" %% "circe-core" % circeVersion,
         "io.circe" %% "circe-generic" % circeVersion,
         "io.circe" %% "circe-parser" % circeVersion

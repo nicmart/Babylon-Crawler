@@ -12,16 +12,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Created by nic on 15/04/2017.
   */
 trait Scraper {
-    def scrape(uri: URI): Future[ScraperResult]
+    def scrape(uri: URI, state: ScraperState): Future[ScraperResult]
 }
 
 case class LinkExtractorScraper(browser: Browser, linkExtractor: LinkExtractor) extends Scraper {
-    def scrape(uri: URI): Future[ScraperResult] = {
+    def scrape(uri: URI, state: ScraperState): Future[ScraperResult] = {
         browser.get(uri).map { browserResponse =>
             ScraperResult(
                 browserResponse.uri,
                 browserResponse.document,
-                linkExtractor.extractLinks(browserResponse)
+                linkExtractor.extractLinks(browserResponse),
+                state.path
             )
         }
     }
@@ -30,5 +31,6 @@ case class LinkExtractorScraper(browser: Browser, linkExtractor: LinkExtractor) 
 final case class ScraperResult(
     uri: URI,
     document: Document,
-    links: List[URI]
+    links: List[URI],
+    path: List[URI]
 )

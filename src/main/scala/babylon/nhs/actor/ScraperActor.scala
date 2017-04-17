@@ -20,7 +20,7 @@ class ScraperActor extends Actor with ActorLogging {
     override def receive: Receive = {
         case Scrape(uri, state) =>
             log.info("ScraperActor scraping {}", uri.toString)
-            state.scraper.scrape(uri).map(CrawlerActor.Scraped(_, state)) pipeTo context.parent
+            state.scraper.scrape(uri, state).map(CrawlerActor.Scraped(_, state)) pipeTo context.parent
             context.stop(self)
     }
 }

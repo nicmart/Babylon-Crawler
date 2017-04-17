@@ -6,6 +6,7 @@ import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.model.Document
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Success
 
 /**
   * Created by nic on 13/04/2017.
@@ -14,6 +15,7 @@ class Browser {
     val browser = new JsoupBrowser()
     def get(uri: URI)(implicit executionContext: ExecutionContext): Future[BrowserResponse] =
         Future {
+            val jsoupResponse = browser.get(uri.toString)
             BrowserResponse(
                 uri,
                 browser.get(uri.toString)

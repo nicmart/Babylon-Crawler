@@ -23,7 +23,8 @@ class StorageActor extends Actor with ActorLogging {
     private def pageElement(result: ScraperResult) = PageElement(
         result.uri.toString,
         result.document.title,
-        result.document >> allText(".main-content")
+        result.document >> allText(".main-content,.article,.page-section .column--two-thirds"),
+        result.path.map(_.toString)
     )
 }
 
