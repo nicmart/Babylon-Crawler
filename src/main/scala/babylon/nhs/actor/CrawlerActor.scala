@@ -6,7 +6,6 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props, ReceiveTimeout, Status}
 import akka.stream.ActorMaterializer
 
 import scala.concurrent.duration._
-import babylon.nhs.actor.ProxyActor.Message
 import babylon.nhs.actor.SupervisorActor.CrawlingDone
 import babylon.nhs.scraper._
 import CrawlerActor._
@@ -119,7 +118,7 @@ object CrawlerActor {
   * This is the immutable state of the crawler.
   * It consists of a map of urls -> scrapers, and a set of visited links
   */
-case class CrawlerState(
+final case class CrawlerState(
     activeScrapers: Map[String, ActorRef] = Map.empty,
     visitedLinks: Set[String] = Set.empty
 ) {

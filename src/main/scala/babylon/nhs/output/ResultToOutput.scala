@@ -4,7 +4,6 @@ import babylon.nhs.output.Output.PageList
 import babylon.nhs.scraper.ScraperResult
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.allText
 import net.ruippeixotog.scalascraper.dsl.DSL._
-import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 
 /**
   * An incremental build of a page list from ScraperResults

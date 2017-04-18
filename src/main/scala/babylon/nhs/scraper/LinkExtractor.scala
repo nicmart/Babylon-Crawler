@@ -16,7 +16,6 @@ trait LinkExtractor {
 }
 
 object LinkExtractor {
-
     /**
       * A link extractor that always returns the same list of links
       */

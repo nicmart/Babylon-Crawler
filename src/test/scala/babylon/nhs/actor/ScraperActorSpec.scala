@@ -6,13 +6,8 @@ import akka.actor.Status.Failure
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import babylon.nhs.actor.CrawlerActor.Scraped
-import babylon.nhs.actor.DumperActor.Dump
 import babylon.nhs.actor.ScraperActor.Scrape
-import babylon.nhs.actor.SupervisorActor.DumpReady
-import babylon.nhs.output.Output.PageList
-import babylon.nhs.output.PageElement
 import babylon.nhs.scraper.{ConstantScraperState, MapScraper, ScraperResult}
-import babylon.nhs.writer.Writer
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 import scala.reflect._
