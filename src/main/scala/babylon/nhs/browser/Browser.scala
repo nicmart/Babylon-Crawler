@@ -2,27 +2,49 @@ package babylon.nhs.browser
 
 import java.net.URI
 
-import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.model.Document
-
+import net.ruippeixotog.scalascraper
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Success
 
 /**
-  * Created by nic on 13/04/2017.
+  * Our definition of browser
   */
-class Browser {
-    val browser = new JsoupBrowser()
+trait Browser {
+    def get(uri: URI)(implicit executionContext: ExecutionContext): Future[BrowserResponse]
+}
+
+/**
+  * An implementation of Browser that uses a generic ScalaScraper browser instance
+  */
+class ScalaScraperBrowser(innerBrowser: scalascraper.browser.Browser) extends Browser {
     def get(uri: URI)(implicit executionContext: ExecutionContext): Future[BrowserResponse] =
         Future {
-            val jsoupResponse = browser.get(uri.toString)
+            val jsoupResponse = innerBrowser.get(uri.toString)
             BrowserResponse(
                 uri,
-                browser.get(uri.toString)
+                innerBrowser.get(uri.toString)
             )
         }
 }
 
+/**
+  * A fake browser that returns responses based on a static URI->Document map
+  * Used for testing
+  */
+class MapBrowser(map: Map[URI, Document]) extends Browser {
+    def get(uri: URI)(implicit executionContext: ExecutionContext): Future[BrowserResponse] = {
+        map.get(uri) match {
+            case Some(document) => Future.successful(BrowserResponse(uri, document))
+            case None => Future.failed(new java.net.UnknownHostException())
+        }
+    }
+}
+
+/**
+  *  The response returned by the browser
+  * @param uri The URI of the request
+  * @param document A scalascraper document instance
+  */
 final case class BrowserResponse(
     uri: URI,
     document: Document

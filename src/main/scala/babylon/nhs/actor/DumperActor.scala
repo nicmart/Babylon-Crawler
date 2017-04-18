@@ -6,20 +6,24 @@ import babylon.nhs.output.Output.PageList
 import babylon.nhs.writer.Writer
 
 /**
-  * Created by Nicolò Martini on 17/04/2017.
+  * Dump the output received using the writer
   */
 class DumperActor(writer: Writer[PageList]) extends Actor with ActorLogging {
 
     import DumperActor._
 
     def receive: Receive = {
-        case Dump(storage) =>
-            writer.write(storage)
+        case Dump(output) =>
+            writer.write(output)
             sender ! DumpReady
     }
 }
 
 object DumperActor {
     sealed trait Message
-    case class Dump(storage: PageList) extends Message
+
+    /**
+      * The only message supported by this actor: a request to dump the output
+      */
+    case class Dump(output: PageList) extends Message
 }

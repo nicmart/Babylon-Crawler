@@ -6,16 +6,14 @@ import babylon.nhs.actor.SupervisorActor.OutputReady
 import babylon.nhs.scraper.ScraperResult
 import babylon.nhs.output.Output.PageList
 import babylon.nhs.output.ResultToOutput
-import net.ruippeixotog.scalascraper.dsl.DSL._
-import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
+
 /**
-  * Created by nic on 15/04/2017.
+  * This actor incrementally builds the aggregated output of the scrapers
   */
 class OutputActor(resultToOutput: ResultToOutput) extends Actor with ActorLogging {
     def receive: Receive = active(List.empty)
     def active(pages: PageList): Receive = {
         case AddOutput(result) =>
-            log.info("Storing result for {}", result.uri.toString)
             context become active(resultToOutput.fold(pages, result))
         case GetOutput =>
             sender ! OutputReady(pages)

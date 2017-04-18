@@ -9,20 +9,31 @@ import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 import scala.util.Try
 
 /**
-  * Created by nic on 15/04/2017.
+  * Extract a list of links from a browser response
   */
 trait LinkExtractor {
     def extractLinks(browserResponse: BrowserResponse): List[URI]
 }
 
 object LinkExtractor {
-    val empty: LinkExtractor = new LinkExtractor {
-        override def extractLinks(browserResponse: BrowserResponse) = Nil
+
+    /**
+      * A link extractor that always returns the same list of links
+      */
+    def constant(links: List[URI]): LinkExtractor = new LinkExtractor {
+        def extractLinks(browserResponse: BrowserResponse): List[URI] = links
     }
+
+    /**
+      * A link extractor that always returns an empty list of links
+      */
+    val empty: LinkExtractor = constant(Nil)
 }
 
 /**
-  * Extract links href selecting the links with a css selector
+  * This extractor builds the list of links using a css selector, and extracting the href
+  * attribute of each element that matches the selector.
+  * If a selected element does not contain an href attribute, it discards it.
   */
 class CssSelectorLinkExtractor(selector: String) extends LinkExtractor {
 

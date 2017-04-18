@@ -12,17 +12,33 @@ import babylon.nhs.scraper._
 import CrawlerActor._
 
 /**
-  * Created by nic on 15/04/2017.
+  * The main actor responsible for crawling.
+  *
+  * @param requestsPerSecond The maximum number of active scrapers per second
+  * @param timeout After this amount of time of inactivity the system will shutdown.
   */
-class CrawlerActor extends Actor with ActorLogging {
+class CrawlerActor(
+    requestsPerSecond: Int = 10,
+    timeout: FiniteDuration = 10.seconds
+) extends Actor with ActorLogging {
 
     implicit val materializer = ActorMaterializer.create(context.system)
 
+    /**
+      * We send messages to scrapers through a proxy throttled actor.
+      * In this way we have control on the number of calls per second to the target website
+      */
     val scrapersProxy = ProxyActor.throttledProxy(
         context.actorOf(Props(new ProxyActor)),
-        10
+        requestsPerSecond
     )
-    context.setReceiveTimeout(5.seconds)
+
+    /**
+      * Set the timeout
+      */
+    override def preStart(): Unit = {
+        context.setReceiveTimeout(timeout)
+    }
 
     def receive: Receive = active(CrawlerState())
 
@@ -30,7 +46,7 @@ class CrawlerActor extends Actor with ActorLogging {
 
         case StartCrawling(uri, state) => {
             log.info("Starting scraping {}", uri.toString)
-            log.info("{} active scrapers", crawlerState.activeScrapers.size)
+            log.info("{} active links", crawlerState.activeScrapers.size)
             changeState(scrapeLinks(crawlerState, state, List(uri)))
         }
 
@@ -47,13 +63,17 @@ class CrawlerActor extends Actor with ActorLogging {
         }
 
         case ReceiveTimeout =>
-            log.info("received timeout")
+            log.info("Timeout Received")
             for (scraper <- crawlerState.activeScrapers.values) {
                 context.stop(scraper)
             }
             changeState(crawlerState.copy(activeScrapers = Map.empty))
     }
 
+    /**
+      * Create new scrapers for each link, if the link is new,
+      * and evolve the CrawlerState accordingly
+      */
     private def scrapeLinks(
         crawlerState: CrawlerState,
         scraperState: ScraperState,
@@ -68,36 +88,67 @@ class CrawlerActor extends Actor with ActorLogging {
         }
     }
 
+    /**
+      * Change the state of the actor.
+      * If the new state is final, notify the parent.
+      */
     private def changeState(crawlerState: CrawlerState): Unit = {
         context become active(crawlerState)
-        if (crawlerState.activeScrapers.isEmpty) {
+        if (crawlerState.isFinal) {
             context.parent ! CrawlingDone
         }
     }
 }
 
 object CrawlerActor {
+
     sealed trait Message
+
+    /**
+      * Initial message. When received we start the crawling
+      */
     case class StartCrawling(uri: URI, state: ScraperState) extends Message
+
+    /**
+      * Message received when a scraper is done.
+      */
     case class Scraped(result: ScraperResult, state: ScraperState) extends Message
 }
 
+/**
+  * This is the immutable state of the crawler.
+  * It consists of a map of urls -> scrapers, and a set of visited links
+  */
 case class CrawlerState(
     activeScrapers: Map[String, ActorRef] = Map.empty,
     visitedLinks: Set[String] = Set.empty
 ) {
+    /**
+      * Add a new active scraper
+      */
     def addScraper(scraper: ActorRef, uri: URI): CrawlerState =
         copy(activeScrapers = activeScrapers + (normaliseUri(uri) -> scraper))
 
+    /**
+      * Mark a uri as visited
+      */
     def visit(uri: URI): CrawlerState = {
         val normalisedUri = normaliseUri(uri)
         copy(visitedLinks = visitedLinks + normalisedUri, activeScrapers = activeScrapers - normalisedUri)
     }
 
+    /**
+      * Check if we already got that uri
+      */
     def isNew(uri: URI): Boolean = {
         val normalisedUri = normaliseUri(uri)
         !visitedLinks.contains(normalisedUri) && !activeScrapers.contains(normalisedUri)
     }
+
+    /**
+      * When there are no active scrapers, it means we are done
+      */
+    def isFinal: Boolean = activeScrapers.isEmpty
 
     private def normaliseUri(uri: URI): String = uri.toString.toLowerCase
 }

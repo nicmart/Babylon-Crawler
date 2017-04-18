@@ -7,19 +7,23 @@ import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.dsl.DSL.Extract._
 
 /**
-  * Created by Nicolò Martini on 17/04/2017.
+  * An incremental build of a page list from ScraperResults
   */
 trait ResultToOutput {
     def fold(output: PageList, result: ScraperResult): PageList
 }
 
+/**
+  * A ResultToOutput that extract the content using a css selector
+  * @param contentSelector CSS selector to extract the content
+  */
 class CssContentResultToOutput(contentSelector: String) extends ResultToOutput {
     def fold(output: PageList, result: ScraperResult): PageList = {
         PageElement(
             result.uri.toString,
             result.document.title,
             result.document >> allText(contentSelector),
-            result.path.map(_.toString)
+            result.ancestors.map(_.toString)
         ) :: output
     }
 }
