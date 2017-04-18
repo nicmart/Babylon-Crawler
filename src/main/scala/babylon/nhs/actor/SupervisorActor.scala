@@ -18,26 +18,35 @@ import babylon.nhs.output.Output.PageList
   * @param writer The writer passed to the dumper actor
   * @param resultToOutput The ScrapeResult to Output conversion used by the output actor
   */
-class SupervisorActor(writer: Writer[PageList], resultToOutput: ResultToOutput) extends Actor with ActorLogging {
+class SupervisorActor(
+    writer: Writer[PageList],
+    resultToOutput: ResultToOutput,
+    pagesPerSecond: Int
+) extends Actor with ActorLogging {
     import SupervisorActor._
 
-    val crawler: ActorRef = context.actorOf(Props(new CrawlerActor), "crawler")
+    val crawler: ActorRef = context.actorOf(Props(new CrawlerActor(pagesPerSecond)), "crawler")
     val output: ActorRef = context.actorOf(Props(new OutputActor(resultToOutput)), "output")
     val dumper: ActorRef = context.actorOf(Props(new DumperActor(writer)), "dumper")
 
     def receive: Receive = {
-        case Start(uri, state) => crawler ! StartCrawling(uri, state)
+        case Start(uri, state) =>
+            crawler ! StartCrawling(uri, state)
         case Scraped(result, state) =>
+            log.info("Scraped {}", result.uri.toASCIIString)
             if (state.isLeaf) output ! AddOutput(result)
         case CrawlingDone =>
             crawler ! PoisonPill
             output ! GetOutput
-        case OutputReady(storage) =>
+        case OutputReady(pageList) =>
+            log.info("Scraped a total of {} pages", pageList.size)
             output ! PoisonPill
-            dumper ! Dump(storage)
+            dumper ! Dump(pageList)
         case DumpReady =>
-            context.stop(self)
+            log.info("Dump ready. Goodbye!")
+            dumper ! PoisonPill
             context.system.terminate()
+            context.stop(self)
     }
 }
 

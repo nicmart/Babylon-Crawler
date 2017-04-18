@@ -6,6 +6,7 @@ import java.net.URI
 import akka.actor.{ActorSystem, Props}
 import babylon.nhs.actor.SupervisorActor.Start
 import babylon.nhs.actor.SupervisorActor
+import babylon.nhs.app.config.DefaultConfig
 import babylon.nhs.browser.{Browser, ScalaScraperBrowser}
 import babylon.nhs.output.CssContentResultToOutput
 import babylon.nhs.output.Output.PageList
@@ -19,21 +20,9 @@ import net.ruippeixotog.scalascraper.browser.JsoupBrowser
   */
 object ScraperApp extends App {
 
-    //val url = new URI("http://wwww.nhs.uk/Conditions/Pages/hub.aspx")
-    val url = new URI("http://wwww.ssssssssssssssssssssnhs.uk/Conditions/Pages/hub.aspx")
-    val filename = "pages.json"
-    val browser = new ScalaScraperBrowser(new JsoupBrowser())
-    val scraperState = new LinkExtractorsScraperState(browser, List(
-        new CssSelectorLinkExtractor("#haz-mod1 a"),
-        new CssSelectorLinkExtractor("#ctl00_PlaceHolderMain_BodyMap_ConditionsByAlphabet a")
-    ))
-    val writer: Writer[PageList] = new SerialiserWriter(
-        JsonCirceSerialiser,
-        new JavaFileWriter(new FileWriter(new File(filename)))
-    )
-    val resultToOutput = new CssContentResultToOutput(".main-content,.article,.page-section .column--two-thirds")
     val system = ActorSystem("nhs-scraper")
-    val supervisor = system.actorOf(Props(new SupervisorActor(writer, resultToOutput)), "supervisor")
+    val config = DefaultConfig()
+    val supervisor = config.supervisor(system)
 
-    supervisor ! Start(url, scraperState)
+    supervisor ! Start(config.startPage, config.initialState)
 }

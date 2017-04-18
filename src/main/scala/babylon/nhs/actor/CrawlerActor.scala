@@ -4,11 +4,11 @@ import java.net.URI
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, ReceiveTimeout, Status}
 import akka.stream.ActorMaterializer
-
 import scala.concurrent.duration._
 import babylon.nhs.actor.SupervisorActor.CrawlingDone
 import babylon.nhs.scraper._
 import CrawlerActor._
+import babylon.nhs.scraper.Scraper.ScraperFailure
 
 /**
   * The main actor responsible for crawling.
@@ -44,21 +44,17 @@ class CrawlerActor(
     def active(crawlerState: CrawlerState): Receive = {
 
         case StartCrawling(uri, state) => {
-            log.info("Starting scraping {}", uri.toString)
-            log.info("{} active links", crawlerState.activeScrapers.size)
             changeState(scrapeLinks(crawlerState, state, List(uri)))
         }
 
         case Scraped(result, state) => {
-            log.info("Finished scraping {}", result.uri.toString)
-            log.info("{} active scrapers", crawlerState.activeScrapers.size)
-            log.info("Links found: {}", result.links.toString())
             context.parent ! SupervisorActor.Scraped(result, state)
             changeState(scrapeLinks(crawlerState.visit(result.uri), state.next(result), result.links))
         }
 
-        case Status.Failure(cause) => {
-            log.info("There has been a failure with message: {}", cause.toString)
+        case Status.Failure(ScraperFailure(uri, state, originalException)) => {
+            log.info("There has been a failure with message: {}", originalException.toString)
+            changeState(crawlerState.visit(uri))
         }
 
         case ReceiveTimeout =>

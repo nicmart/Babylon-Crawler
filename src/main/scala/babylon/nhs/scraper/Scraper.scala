@@ -3,10 +3,12 @@ package babylon.nhs.scraper
 import java.net.URI
 
 import babylon.nhs.browser.Browser
+import babylon.nhs.scraper.Scraper.ScraperFailure
 import net.ruippeixotog.scalascraper.model.Document
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Success}
 
 /**
   * This is the component that does the scraping.
@@ -16,18 +18,25 @@ trait Scraper {
     def scrape(uri: URI, state: ScraperState): Future[ScraperResult]
 }
 
+object Scraper {
+    case class ScraperFailure(uri: URI, state: ScraperState, originalException: Throwable) extends RuntimeException
+}
+
 /**
   * A Scraper implementation based on a Browser and LinkExtractor instances
   */
 case class LinkExtractorScraper(browser: Browser, linkExtractor: LinkExtractor) extends Scraper {
     def scrape(uri: URI, state: ScraperState): Future[ScraperResult] = {
-        browser.get(uri).map { browserResponse =>
-            ScraperResult(
-                browserResponse.uri,
-                browserResponse.document,
-                linkExtractor.extractLinks(browserResponse),
-                state.path
+        browser.get(uri).transform {
+            case Success(browserResponse) => Success(
+                ScraperResult(
+                    browserResponse.uri,
+                    browserResponse.document,
+                    linkExtractor.extractLinks(browserResponse),
+                    state.path
+                )
             )
+            case Failure(exception) => Failure(new ScraperFailure(uri, state, exception))
         }
     }
 }
