@@ -16,7 +16,7 @@ import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 object DefaultConfig {
     def apply() = Config(
         startPage = new URI("http://www.nhs.uk/Conditions/Pages/hub.aspx"),
-        output = new File("pages.json"),
+        output = new File("cache/pages.json"),
         serialiser = JsonCirceSerialiser,
         resultToOutput =  new CssContentResultToOutput(
             // This selector extracts the content of the page
@@ -33,6 +33,6 @@ object DefaultConfig {
         ),
         // Maximum number of Scrape requests per second.
         // Increase this to avoid api rates limits
-        pagesPerSecond = 1
+        pagesPerSecond = 10
     )
 }
