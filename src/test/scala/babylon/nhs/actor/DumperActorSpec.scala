@@ -17,9 +17,11 @@ class DumperActorSpec extends TestKit(ActorSystem("DumperActorSpec"))
     "DumperActor" must {
 
         "use the writer to dump the output" in {
-            val dumper = system.actorOf(dumperProps(list => list shouldBe pageList))
+            var output: PageList = null
+            val dumper = system.actorOf(dumperProps( output = _ ))
             dumper ! Dump(pageList)
             expectMsg(DumpReady)
+            output shouldBe pageList
         }
 
     }

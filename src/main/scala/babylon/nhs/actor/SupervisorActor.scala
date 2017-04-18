@@ -36,6 +36,7 @@ class SupervisorActor(writer: Writer[PageList], resultToOutput: ResultToOutput) 
             output ! PoisonPill
             dumper ! Dump(storage)
         case DumpReady =>
+            context.stop(self)
             context.system.terminate()
     }
 }

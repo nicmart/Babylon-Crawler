@@ -2,7 +2,6 @@ package babylon.nhs.actor
 
 import java.net.URI
 
-import akka.actor.Status.Failure
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import babylon.nhs.actor.CrawlerActor.StartCrawling
@@ -11,8 +10,6 @@ import babylon.nhs.actor.SupervisorActor.{CrawlingDone, Scraped}
 import babylon.nhs.scraper.{ConstantScraperState, MapScraper, ScraperResult}
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
-
-import scala.reflect._
 import scala.concurrent.duration._
 
 class CrawlerActorSpec extends TestKit(ActorSystem("CrawlerActorSpec"))
