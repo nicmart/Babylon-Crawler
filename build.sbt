@@ -16,7 +16,7 @@ lazy val common = (project in file("nhs-common")).
         name := "NHS-Common"
     )
 
-lazy val scraper = (project.dependsOn(common) in file("nhs-scraper")).
+lazy val scraper = (project in file("nhs-scraper")).dependsOn(common).
     settings(
         inThisBuild(commonSettings),
         name := "NHS-Scraper",
@@ -41,6 +41,9 @@ lazy val http = (project in file ("nhs-http")).dependsOn(common).
             "org.http4s"     %% "http4s-blaze-server" % http4sVersion,
             "org.http4s"     %% "http4s-circe"        % http4sVersion,
             "org.http4s"     %% "http4s-dsl"          % http4sVersion,
-            "ch.qos.logback" %  "logback-classic"     % "1.2.1"
+            "ch.qos.logback" %  "logback-classic"     % "1.2.1",
+            "io.circe" %% "circe-core" % circeVersion,
+            "io.circe" %% "circe-generic" % circeVersion,
+            "io.circe" %% "circe-parser" % circeVersion
         )
     )
