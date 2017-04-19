@@ -75,11 +75,12 @@ class CrawlerActor(
         links: List[URI]
     ): CrawlerState = {
         links.foldLeft(crawlerState) {
-            case (accState, link) => if (accState.isNew(link)) {
-                val scraper = context.actorOf(Props(new ScraperActor))
-                scrapersProxy ! ProxyActor.Message(scraper, ScraperActor.Scrape(link, scraperState), self)
-                accState.addScraper(scraper, link)
-            } else accState
+            case (accState, link) =>
+                if (accState.isNew(link)) {
+                    val scraper = context.actorOf(Props(new ScraperActor))
+                    scrapersProxy ! ProxyActor.Message(scraper, ScraperActor.Scrape(link, scraperState), self)
+                    accState.addScraper(scraper, link)
+                } else accState
         }
     }
 
@@ -88,6 +89,7 @@ class CrawlerActor(
       * If the new state is final, notify the parent.
       */
     private def changeState(crawlerState: CrawlerState): Unit = {
+        log.info("Visited {} pages", crawlerState.visitedLinks.size)
         context become active(crawlerState)
         if (crawlerState.isFinal) {
             context.parent ! CrawlingDone

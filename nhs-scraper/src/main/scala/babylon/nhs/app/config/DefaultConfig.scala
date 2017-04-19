@@ -28,7 +28,9 @@ object DefaultConfig {
                 // Select links in initial page
                 new CssSelectorLinkExtractor("#haz-mod1 a"),
                 // Select links in "letter" pages
-                new CssSelectorLinkExtractor("#ctl00_PlaceHolderMain_BodyMap_ConditionsByAlphabet a")
+                new CssSelectorLinkExtractor("#ctl00_PlaceHolderMain_BodyMap_ConditionsByAlphabet a"),
+                // Select links in condition pages menu
+                new CssSelectorLinkExtractor("#ctl00_PlaceHolderMain_articles a")
             )
         ),
         // Maximum number of Scrape requests per second.

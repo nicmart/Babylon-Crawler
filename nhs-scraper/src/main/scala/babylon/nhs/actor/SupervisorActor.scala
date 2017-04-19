@@ -34,7 +34,7 @@ class SupervisorActor(
             crawler ! StartCrawling(uri, state)
         case Scraped(result, state) =>
             log.info("Scraped {}", result.uri.toASCIIString)
-            if (state.isLeaf) output ! AddOutput(result)
+            output ! AddOutput(result)
         case CrawlingDone =>
             crawler ! PoisonPill
             output ! GetOutput

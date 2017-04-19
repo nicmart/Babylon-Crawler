@@ -3,6 +3,7 @@ import Dependencies._
 val circeVersion = "0.7.0"
 val akkaVersion = "2.5.0"
 val http4sVersion = "0.15.8"
+val luceneVersion = "6.5.0"
 
 lazy val commonSettings = List(
     organization := "babylons.nhs",
@@ -44,6 +45,11 @@ lazy val http = (project in file ("nhs-http")).dependsOn(common).
             "ch.qos.logback" %  "logback-classic"     % "1.2.1",
             "io.circe" %% "circe-core" % circeVersion,
             "io.circe" %% "circe-generic" % circeVersion,
-            "io.circe" %% "circe-parser" % circeVersion
+            "io.circe" %% "circe-parser" % circeVersion,
+            "org.apache.lucene" % "lucene-facet" % luceneVersion,
+            "org.apache.lucene" % "lucene-analyzers-common" % luceneVersion,
+            "org.apache.lucene" % "lucene-queryparser" % luceneVersion,
+            "org.apache.lucene" % "lucene-expressions" % luceneVersion,
+            "org.apache.lucene" % "lucene-spatial" % luceneVersion
         )
     )
