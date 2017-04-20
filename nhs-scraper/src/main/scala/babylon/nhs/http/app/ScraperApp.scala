@@ -1,4 +1,4 @@
-package babylon.nhs.app
+package babylon.nhs.http.app
 
 import java.io.{File, FileWriter}
 import java.net.URI
@@ -6,7 +6,7 @@ import java.net.URI
 import akka.actor.{ActorSystem, Props}
 import babylon.nhs.actor.SupervisorActor.Start
 import babylon.nhs.actor.SupervisorActor
-import babylon.nhs.app.config.DefaultConfig
+import babylon.nhs.http.app.config.DefaultConfig
 import babylon.nhs.browser.{Browser, ScalaScraperBrowser}
 import babylon.nhs.output.CssContentResultToOutput
 import babylon.nhs.output.Output.PageList

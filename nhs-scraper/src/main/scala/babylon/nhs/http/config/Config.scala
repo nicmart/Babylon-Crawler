@@ -1,4 +1,4 @@
-package babylon.nhs.config
+package babylon.nhs.http.config
 
 import java.io.{File, FileWriter}
 import java.net.URI

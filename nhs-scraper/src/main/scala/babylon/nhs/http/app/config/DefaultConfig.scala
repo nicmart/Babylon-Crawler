@@ -1,10 +1,10 @@
-package babylon.nhs.app.config
+package babylon.nhs.http.app.config
 
 import java.io.File
 import java.net.URI
 
 import babylon.nhs.browser.ScalaScraperBrowser
-import babylon.nhs.config.Config
+import babylon.nhs.http.config.Config
 import babylon.nhs.output.CssContentResultToOutput
 import babylon.nhs.scraper.{CssSelectorLinkExtractor, LinkExtractorsScraperState}
 import babylon.nhs.serialiser.JsonCirceSerialiser

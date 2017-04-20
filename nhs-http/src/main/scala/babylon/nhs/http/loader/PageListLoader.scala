@@ -1,8 +1,8 @@
-package babylon.nhs.loader
+package babylon.nhs.http.loader
 
 import java.io.FileReader
 
-import babylon.nhs.loader.PageListLoader.PageListLoaderException
+import babylon.nhs.http.loader.PageListLoader.PageListLoaderException
 import babylon.nhs.output.Output.PageList
 import io.circe.Decoder
 
