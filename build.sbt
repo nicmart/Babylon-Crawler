@@ -6,21 +6,21 @@ val http4sVersion = "0.15.8"
 val luceneVersion = "6.5.0"
 
 lazy val commonSettings = List(
-    organization := "babylons.nhs",
+    organization := "babylon",
     scalaVersion := "2.12.1",
     version      := "0.1.0-SNAPSHOT"
 )
 
-lazy val common = (project in file("nhs-common")).
+lazy val common = (project in file("common")).
     settings(
         inThisBuild(commonSettings),
-        name := "NHS-Common"
+        name := "Babylon Common"
     )
 
-lazy val scraper = (project in file("nhs-scraper")).dependsOn(common).
+lazy val crawler = (project in file("crawler")).dependsOn(common).
     settings(
         inThisBuild(commonSettings),
-        name := "NHS-Scraper",
+        name := "Babylon Crawler",
         libraryDependencies ++= List(
             scalaTest % Test,
             "net.ruippeixotog" %% "scala-scraper" % "1.2.0",
@@ -33,10 +33,10 @@ lazy val scraper = (project in file("nhs-scraper")).dependsOn(common).
         )
     )
 
-lazy val http = (project in file ("nhs-http")).dependsOn(common).
+lazy val search = (project in file ("search")).dependsOn(common).
     settings(
         inThisBuild(commonSettings),
-        name := "NHS-Scraper",
+        name := "Babylon Search",
         libraryDependencies ++= List(
             scalaTest % Test,
             "org.http4s"     %% "http4s-blaze-server" % http4sVersion,
