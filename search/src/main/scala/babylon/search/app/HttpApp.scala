@@ -2,7 +2,7 @@ package babylon.search.app
 
 import java.util.concurrent.{ExecutorService, Executors}
 
-import babylon.search.config.Wiring
+import babylon.search.app.config.Wiring
 import babylon.search.http.RestService
 import org.http4s.server.blaze.BlazeBuilder
 import org.http4s.server.{Server, ServerApp}
@@ -17,13 +17,14 @@ object HttpApp extends ServerApp {
     val pool : ExecutorService  = Executors.newCachedThreadPool()
 
     // Initialise the index
-    println("Building the page index")
+    println("Indexing pages...")
     Wiring.indexInitialiser.apply()
+    println("Indexing done")
 
     override def server(args: List[String]): Task[Server] =
         BlazeBuilder
             .bindHttp(port, ip)
-            .mountService(RestService())
+            .mountService(Wiring.httpService)
             .withServiceExecutor(pool)
             .start
 }

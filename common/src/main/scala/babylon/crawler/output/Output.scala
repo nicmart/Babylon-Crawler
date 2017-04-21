@@ -5,6 +5,7 @@ package babylon.crawler.output
   */
 object Output {
     type PageList = List[PageElement]
+    val empty: PageList = List()
 }
 
 final case class PageElement(url: String, title: String, content: String, ancestors: List[String])

@@ -1,6 +1,6 @@
 package babylon.search.http
 
-import babylon.search.config.Wiring
+import babylon.search.app.config.Wiring
 import babylon.search.service.SearchQuery
 import io.circe._
 import io.circe.generic.auto._
@@ -20,9 +20,9 @@ object LimitParam extends OptionalQueryParamDecoderMatcher[Int]("limit")
   */
 object RestService {
 
-    def apply() = HttpService {
+    lazy val httpService = HttpService {
 
-        case GET -> Root / "search" :? QueryParam(query) +& LimitParam(limit)=>
+        case GET -> Root / "search" :? QueryParam(query) +& LimitParam(limit) =>
             val tryResults = Try {
                 val searchQuery = SearchQuery(query, limit.getOrElse(10))
                 val result = Wiring.searchService.search(searchQuery)

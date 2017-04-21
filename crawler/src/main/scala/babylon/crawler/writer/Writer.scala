@@ -2,7 +2,7 @@ package babylon.crawler.writer
 
 import java.io.FileWriter
 
-import babylon.crawler.serialiser.Serialiser
+import io.circe.Encoder
 
 /**
   * Consume a value of type T causing a side-effect
@@ -12,10 +12,10 @@ trait Writer[T] {
 }
 
 /**
-  * An implementation of writer that uses a String writer and a serialiser for T
+  * An implementation of writer that uses a String writer and a json encoder for T
   */
-class SerialiserWriter[T](serialiser: Serialiser[T], writer: Writer[String]) extends Writer[T] {
-    def write(value: T): Unit = writer.write(serialiser.serialise(value))
+class JsonWriter[T](encoder: Encoder[T], writer: Writer[String]) extends Writer[T] {
+    def write(value: T): Unit = writer.write(encoder(value).toString())
 }
 
 /**

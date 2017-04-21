@@ -36,7 +36,7 @@ case class LinkExtractorScraper(browser: Browser, linkExtractor: LinkExtractor) 
                     state.path
                 )
             )
-            case Failure(exception) => Failure(new ScraperFailure(uri, state, exception))
+            case Failure(exception) => Failure(ScraperFailure(uri, state, exception))
         }
     }
 }
@@ -64,6 +64,6 @@ class MapScraper(map: Map[URI, ScraperResult]) extends Scraper {
 final case class ScraperResult(
     uri: URI,
     document: Document,
-    links: List[URI],
-    ancestors: List[URI]
+    links: List[URI] = List.empty,
+    ancestors: List[URI] = List.empty
 )

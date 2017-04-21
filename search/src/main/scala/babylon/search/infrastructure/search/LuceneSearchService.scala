@@ -12,7 +12,7 @@ class LuceneSearchService(
     searchToLuceneQuery: SearchQuery => Query,
     searcher: IndexSearcher,
     luceneDocsToSearchResponse: TopDocs => SearchResponse
-) extends SearchService{
+) extends SearchService {
     def search(searchQuery: SearchQuery): SearchResponse = {
         luceneDocsToSearchResponse {
             searcher.search(searchToLuceneQuery(searchQuery), searchQuery.limit)

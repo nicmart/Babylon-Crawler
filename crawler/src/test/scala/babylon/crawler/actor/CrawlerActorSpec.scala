@@ -40,7 +40,10 @@ class CrawlerActorSpec extends TestKit(ActorSystem("CrawlerActorSpec"))
             scraper ! Scrape(uri, scraperState)
             parent.expectMsg(2.seconds, CrawlingDone)
         }
+    }
 
+    override def afterAll(): Unit = {
+        system.terminate()
     }
 }
 
