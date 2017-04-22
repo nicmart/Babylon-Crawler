@@ -22,11 +22,15 @@ import babylon.crawler.output.Output.PageList
 class SupervisorActor(
     writer: Writer[PageList],
     resultToOutput: ResultToOutput,
-    pagesPerSecond: Int
+    pagesPerSecond: Int,
+    maxAttemptsPerPage: Int
 ) extends Actor with ActorLogging {
     import SupervisorActor._
 
-    val crawler: ActorRef = context.actorOf(Props(new CrawlerActor(pagesPerSecond)), "crawler")
+    val crawler: ActorRef = context.actorOf(
+        Props(new CrawlerActor(pagesPerSecond, maxAttempts = maxAttemptsPerPage)),
+        "crawler"
+    )
     val output: ActorRef = context.actorOf(Props(new OutputActor(resultToOutput)), "output")
     val dumper: ActorRef = context.actorOf(Props(new DumperActor(writer)), "dumper")
 

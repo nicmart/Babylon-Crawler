@@ -25,7 +25,7 @@ class SupervisorActorSpec extends TestKit(ActorSystem("SupervisorActorSpec"))
 
             val writer = DumperActorSpec.writer { output = _ }
 
-            val supervisor = parent.childActorOf(Props(new SupervisorActor(writer, resultToOutput, 10)))
+            val supervisor = parent.childActorOf(Props(new SupervisorActor(writer, resultToOutput, 10, 3)))
             parent.watch(supervisor)
             supervisor ! Start(uri, scraperState)
             parent.expectTerminated(supervisor)

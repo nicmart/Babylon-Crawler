@@ -17,7 +17,8 @@ import babylon.crawler.scraper.Scraper.ScraperFailure
   */
 class CrawlerActor(
     requestsPerSecond: Int = 10,
-    timeout: FiniteDuration = 10.seconds
+    timeout: FiniteDuration = 10.seconds,
+    maxAttempts: Int = 3
 ) extends Actor with ActorLogging {
 
     import CrawlerActor._
@@ -63,7 +64,12 @@ class CrawlerActor(
           */
         case Status.Failure(failure@ScraperFailure(uri, state, originalException)) => {
             logFailure(failure)
-            changeState(crawlerState.visit(uri).addError(failure))
+            if (crawlerState.attempts(uri) >= maxAttempts) {
+                changeState(crawlerState.visit(uri).addError(failure))
+            } else {
+                log.info(s"Retrying scraping of '${uri.toString}'")
+                changeState(scrapeLinks(crawlerState.failed(uri), state, List(uri)))
+            }
         }
 
         /**
@@ -72,7 +78,6 @@ class CrawlerActor(
         case ReceiveTimeout =>
             log.info("Timeout Received")
             for (scraper <- crawlerState.activeScrapers.values) {
-
                 context.stop(scraper)
             }
             changeState(crawlerState.copy(activeScrapers = Map.empty))

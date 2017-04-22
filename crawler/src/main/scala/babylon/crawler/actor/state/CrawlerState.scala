@@ -11,21 +11,42 @@ import babylon.crawler.scraper.Scraper.ScraperFailure
   */
 final case class CrawlerState(
     activeScrapers: Map[String, ActorRef] = Map.empty,
+    pendingLinks: Map[String, Int] = Map.empty.withDefaultValue(0),
     visitedLinks: Set[String] = Set.empty,
     errors: List[ScraperFailure] = List.empty
 ) {
     /**
       * Add a new active scraper
       */
-    def addScraper(scraper: ActorRef, uri: URI): CrawlerState =
-        copy(activeScrapers = activeScrapers + (normaliseUri(uri) -> scraper))
+    def addScraper(scraper: ActorRef, uri: URI): CrawlerState = {
+        val normalisedUri = normaliseUri(uri)
+        copy(
+            activeScrapers = activeScrapers + (normaliseUri(uri) -> scraper),
+            pendingLinks = pendingLinks.updated(
+                normaliseUri(uri),
+                pendingLinks.getOrElse(normalisedUri, 0) + 1
+            )
+        )
+    }
 
     /**
       * Mark a uri as visited
       */
     def visit(uri: URI): CrawlerState = {
         val normalisedUri = normaliseUri(uri)
-        copy(visitedLinks = visitedLinks + normalisedUri, activeScrapers = activeScrapers - normalisedUri)
+        copy(
+            visitedLinks = visitedLinks + normalisedUri,
+            activeScrapers = activeScrapers - normalisedUri,
+            pendingLinks = pendingLinks.updated(normalisedUri, 0)
+        )
+    }
+
+    /**
+      * Failed to scrape a uri
+      */
+    def failed(uri: URI): CrawlerState = {
+        val normalisedUri = normaliseUri(uri)
+        copy(activeScrapers = activeScrapers - normalisedUri)
     }
 
     /**
@@ -47,6 +68,11 @@ final case class CrawlerState(
       * When there are no active scrapers, it means we are done
       */
     def isFinal: Boolean = activeScrapers.isEmpty
+
+    /**
+      * How many scrape attempts we have performed so far
+      */
+    def attempts(uri: URI): Int = pendingLinks.getOrElse(normaliseUri(uri), 0)
 
     private def normaliseUri(uri: URI): String = uri.toString.toLowerCase
 }

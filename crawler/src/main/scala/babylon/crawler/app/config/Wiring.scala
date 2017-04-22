@@ -15,10 +15,10 @@ import io.circe.Encoder
 import io.circe.generic.auto._
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 
-/**
-  * Created by Nicolò Martini on 21/04/2017.
-  */
 object Wiring {
+    /**
+      * Config parameters
+      */
     lazy val startPage = new URI("http://www.nhs.uk/Conditions/Pages/hub.aspx")
     lazy val outputFile = new File("cache/pages.json")
     lazy val contentCssSelector = ".main-content,.article,.page-section .column--two-thirds"
@@ -27,10 +27,13 @@ object Wiring {
         "#ctl00_PlaceHolderMain_BodyMap_ConditionsByAlphabet a",
         "#ctl00_PlaceHolderMain_articles a"
     )
-    lazy val pagesPerSecond = 5
+    lazy val maxPagesPerSecond = 5
+    lazy val maxAttemptsPerPage = 4
 
+    /**
+      * Services
+      */
     lazy val initialMessage = Start(startPage, initialState)
-
     lazy val resultToOutput = new CssContentResultToOutput(contentCssSelector)
     lazy val pageListJsonEncoder = implicitly[Encoder[PageList]]
     //lazy val browser = new RandomFailingBrowser(new ScalaScraperBrowser(new JsoupBrowser()), 0.1)
@@ -43,6 +46,6 @@ object Wiring {
     lazy val writer = new JsonWriter(pageListJsonEncoder, javaFileWriter)
 
     lazy val actorSystem = ActorSystem("nhs-scraper")
-    lazy val supervisorProps = Props(new SupervisorActor(writer, resultToOutput, pagesPerSecond))
+    lazy val supervisorProps = Props(new SupervisorActor(writer, resultToOutput, maxPagesPerSecond, maxAttemptsPerPage))
     lazy val supervisor = actorSystem.actorOf(supervisorProps, "supervisor")
 }

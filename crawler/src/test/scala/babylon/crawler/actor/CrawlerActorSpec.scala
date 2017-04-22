@@ -36,9 +36,9 @@ class CrawlerActorSpec extends TestKit(ActorSystem("CrawlerActorSpec"))
         "end before timeout even if some links were not found" in {
             val uri = new URI("http://wrong")
             val parent = TestProbe()
-            val crawler = parent.childActorOf(Props(new CrawlerActor(100, 10.seconds)))
+            val crawler = parent.childActorOf(Props(new CrawlerActor(100, 10.seconds, 3)))
             crawler ! StartCrawling(uri, scraperState)
-            parent.expectMsgType[CrawlingDone](1.seconds)
+            parent.expectMsgType[CrawlingDone]
         }
 
         "collect scraping errors" in {
