@@ -24,20 +24,17 @@ class LuceneIndexerSpec extends WordSpec with Matchers {
 }
 
 object LuceneIndexerSpec {
-
     def pagetToLuceneDoc(pageElement: PageElement): Document = {
         val doc = new Document
         doc.add(new StringField("title", pageElement.title, Field.Store.YES))
         doc
     }
-
     def writer(f: Document => Unit) = new IndexWriter(new RAMDirectory(), new IndexWriterConfig()) {
         override def addDocument(doc: lang.Iterable[_ <: IndexableField]): Long = {
             f(doc.asInstanceOf[Document])
             1
         }
     }
-
     val pageElements = List(
         PageElement(
             "http://test1",
