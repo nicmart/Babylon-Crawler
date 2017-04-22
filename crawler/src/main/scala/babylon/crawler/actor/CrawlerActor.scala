@@ -1,13 +1,12 @@
 package babylon.crawler.actor
 
 import java.net.URI
-
+import scala.concurrent.duration._
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, ReceiveTimeout, Status}
 import akka.stream.ActorMaterializer
-import scala.concurrent.duration._
 import babylon.crawler.actor.SupervisorActor.CrawlingDone
 import babylon.crawler.scraper._
-import CrawlerActor._
+import babylon.crawler.actor.state.CrawlerState
 import babylon.crawler.scraper.Scraper.ScraperFailure
 
 /**
@@ -21,6 +20,7 @@ class CrawlerActor(
     timeout: FiniteDuration = 10.seconds
 ) extends Actor with ActorLogging {
 
+    import CrawlerActor._
     implicit val materializer = ActorMaterializer.create(context.system)
 
     /**
@@ -43,26 +43,41 @@ class CrawlerActor(
 
     def active(crawlerState: CrawlerState): Receive = {
 
+        /**
+          * Initial message to start the crawling
+          */
         case StartCrawling(uri, state) => {
             changeState(scrapeLinks(crawlerState, state, List(uri)))
         }
 
+        /**
+          * A Scraper ended successfully his job
+          */
         case Scraped(result, state) => {
             context.parent ! SupervisorActor.Scraped(result, state)
             changeState(scrapeLinks(crawlerState.visit(result.uri), state.next(result), result.links))
         }
 
-        case Status.Failure(ScraperFailure(uri, state, originalException)) => {
-            log.info("There has been a failure with message: {}", originalException.toString)
-            changeState(crawlerState.visit(uri))
+        /**
+          * A Scraper failed scraping a page
+          */
+        case Status.Failure(failure@ScraperFailure(uri, state, originalException)) => {
+            logFailure(failure)
+            changeState(crawlerState.visit(uri).addError(failure))
         }
 
+        /**
+          * A timeout happened
+          */
         case ReceiveTimeout =>
             log.info("Timeout Received")
             for (scraper <- crawlerState.activeScrapers.values) {
+
                 context.stop(scraper)
             }
             changeState(crawlerState.copy(activeScrapers = Map.empty))
+
+        case boh => log.info(boh.toString)
     }
 
     /**
@@ -92,8 +107,14 @@ class CrawlerActor(
         log.info("Visited {} pages", crawlerState.visitedLinks.size)
         context become active(crawlerState)
         if (crawlerState.isFinal) {
-            context.parent ! CrawlingDone
+            context.parent ! CrawlingDone(crawlerState)
         }
+    }
+
+    private def logFailure(failure: ScraperFailure): Unit = {
+        val url = failure.uri.toString
+        val message = failure.originalException.getMessage
+        log.info(s"There has been a failure scraping the page at '$url' with message '$message'")
     }
 }
 
@@ -112,40 +133,3 @@ object CrawlerActor {
     case class Scraped(result: ScraperResult, state: ScraperState) extends Message
 }
 
-/**
-  * This is the immutable state of the crawler.
-  * It consists of a map of urls -> scrapers, and a set of visited links
-  */
-final case class CrawlerState(
-    activeScrapers: Map[String, ActorRef] = Map.empty,
-    visitedLinks: Set[String] = Set.empty
-) {
-    /**
-      * Add a new active scraper
-      */
-    def addScraper(scraper: ActorRef, uri: URI): CrawlerState =
-        copy(activeScrapers = activeScrapers + (normaliseUri(uri) -> scraper))
-
-    /**
-      * Mark a uri as visited
-      */
-    def visit(uri: URI): CrawlerState = {
-        val normalisedUri = normaliseUri(uri)
-        copy(visitedLinks = visitedLinks + normalisedUri, activeScrapers = activeScrapers - normalisedUri)
-    }
-
-    /**
-      * Check if we already got that uri
-      */
-    def isNew(uri: URI): Boolean = {
-        val normalisedUri = normaliseUri(uri)
-        !visitedLinks.contains(normalisedUri) && !activeScrapers.contains(normalisedUri)
-    }
-
-    /**
-      * When there are no active scrapers, it means we are done
-      */
-    def isFinal: Boolean = activeScrapers.isEmpty
-
-    private def normaliseUri(uri: URI): String = uri.toString.toLowerCase
-}

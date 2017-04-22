@@ -30,20 +30,30 @@ class CrawlerActorSpec extends TestKit(ActorSystem("CrawlerActorSpec"))
             }.toList
 
             parent.expectMsgAllOf(expectedMessages: _*)
-            parent.expectMsg(CrawlingDone)
+            parent.expectMsgType[CrawlingDone]
         }
 
-        "timeout if some links are not found" in {
+        "end before timeout even if some links were not found" in {
             val uri = new URI("http://wrong")
             val parent = TestProbe()
-            val scraper = parent.childActorOf(Props(new CrawlerActor(100, 1.seconds)))
-            scraper ! Scrape(uri, scraperState)
-            parent.expectMsg(2.seconds, CrawlingDone)
+            val crawler = parent.childActorOf(Props(new CrawlerActor(100, 10.seconds)))
+            crawler ! StartCrawling(uri, scraperState)
+            parent.expectMsgType[CrawlingDone](1.seconds)
+        }
+
+        "collect scraping errors" in {
+            val uri = new URI("http://wrong")
+            val parent = TestProbe()
+            val crawler = parent.childActorOf(Props(new CrawlerActor(100, 10.seconds)))
+            crawler ! StartCrawling(uri, scraperState)
+            parent.expectMsgPF() {
+                case CrawlingDone(crawlerState) if crawlerState.errors.nonEmpty  => true
+            }
         }
     }
 
-    override def afterAll(): Unit = {
-        system.terminate()
+    override def afterAll {
+        TestKit.shutdownActorSystem(system)
     }
 }
 

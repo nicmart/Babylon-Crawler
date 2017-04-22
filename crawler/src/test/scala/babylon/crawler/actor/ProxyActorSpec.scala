@@ -24,4 +24,8 @@ class ProxyActorSpec extends TestKit(ActorSystem("ProxyActorSpec"))
         }
 
     }
+
+    override def afterAll {
+        TestKit.shutdownActorSystem(system)
+    }
 }

@@ -11,6 +11,12 @@ trait Writer[T] {
     def write(value: T): Unit
 }
 
+object Writer {
+    def apply[T](f: T => Unit): Writer[T] = new Writer[T] {
+        def write(value: T): Unit = f(value)
+    }
+}
+
 /**
   * An implementation of writer that uses a String writer and a json encoder for T
   */

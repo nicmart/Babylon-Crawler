@@ -6,9 +6,10 @@ import akka.actor.{Actor, ActorLogging, ActorRef, PoisonPill, Props}
 import babylon.crawler.actor.CrawlerActor.StartCrawling
 import babylon.crawler.actor.DumperActor.Dump
 import babylon.crawler.actor.OutputActor.{AddOutput, GetOutput}
+import babylon.crawler.actor.state.CrawlerState
 import babylon.crawler.scraper.{ScraperResult, ScraperState}
 import babylon.crawler.writer._
-import babylon.crawler.output.{ResultToOutput}
+import babylon.crawler.output.ResultToOutput
 import babylon.crawler.output.Output.PageList
 
 /**
@@ -35,7 +36,8 @@ class SupervisorActor(
         case Scraped(result, state) =>
             log.info("Scraped {}", result.uri.toASCIIString)
             output ! AddOutput(result)
-        case CrawlingDone =>
+        case CrawlingDone(crawlerState) =>
+            logFinalState(crawlerState)
             crawler ! PoisonPill
             output ! GetOutput
         case OutputReady(pageList) =>
@@ -47,6 +49,16 @@ class SupervisorActor(
             dumper ! PoisonPill
             context.system.terminate()
             context.stop(self)
+    }
+
+    private def logFinalState(crawlerState: CrawlerState) = {
+        log.info("Crawling Done")
+        if (crawlerState.errors.nonEmpty) {
+            val errorsStrings = crawlerState.errors.map { failure =>
+                s"${failure.uri.toString} -> ${failure.originalException.toString}"
+            }.mkString("\n")
+            log.info(s"Errors (${crawlerState.errors.size}):\n{}", errorsStrings)
+        }
     }
 }
 
@@ -76,5 +88,5 @@ object SupervisorActor {
     /**
       * Message received when the crawler has crawled all the pages
       */
-    case object CrawlingDone extends Message
+    case class CrawlingDone(state: CrawlerState) extends Message
 }

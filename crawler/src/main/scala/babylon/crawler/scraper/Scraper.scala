@@ -19,7 +19,11 @@ trait Scraper {
 }
 
 object Scraper {
-    case class ScraperFailure(uri: URI, state: ScraperState, originalException: Throwable) extends RuntimeException
+    case class ScraperFailure(
+        uri: URI,
+        state: ScraperState,
+        originalException: Throwable
+    ) extends RuntimeException
 }
 
 /**
@@ -49,7 +53,7 @@ class MapScraper(map: Map[URI, ScraperResult]) extends Scraper {
     def scrape(uri: URI, state: ScraperState): Future[ScraperResult] = {
         map.get(uri) match {
             case Some(scraperResult) => Future.successful(scraperResult)
-            case None => Future.failed(new NoSuchElementException)
+            case None => Future.failed(ScraperFailure(uri, state, new RuntimeException))
         }
     }
 }

@@ -40,6 +40,16 @@ class MapBrowser(map: Map[URI, Document]) extends Browser {
     }
 }
 
+class RandomFailingBrowser(browser:Browser, probability: Double) extends Browser {
+    def get(uri: URI)(implicit executionContext: ExecutionContext): Future[BrowserResponse] = {
+        if (Math.random() <= probability) {
+            Future.failed(new RuntimeException)
+        } else {
+            browser.get(uri)
+        }
+    }
+}
+
 /**
   *  The response returned by the browser
   * @param uri The URI of the request

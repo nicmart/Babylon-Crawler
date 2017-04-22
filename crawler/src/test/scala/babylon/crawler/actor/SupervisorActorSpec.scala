@@ -33,6 +33,10 @@ class SupervisorActorSpec extends TestKit(ActorSystem("SupervisorActorSpec"))
             output.toSet shouldBe expectedOutput.toSet
         }
     }
+
+    override def afterAll {
+        TestKit.shutdownActorSystem(system)
+    }
 }
 
 object SupervisorActorSpec {

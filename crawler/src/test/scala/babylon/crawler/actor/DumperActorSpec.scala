@@ -25,6 +25,10 @@ class DumperActorSpec extends TestKit(ActorSystem("DumperActorSpec"))
         }
 
     }
+
+    override def afterAll {
+        TestKit.shutdownActorSystem(system)
+    }
 }
 
 object DumperActorSpec {

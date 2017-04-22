@@ -35,6 +35,10 @@ class OutputActorSpec extends TestKit(ActorSystem("OutputActorSpec"))
         }
     }
 
+    override def afterAll {
+        TestKit.shutdownActorSystem(system)
+    }
+
 }
 
 object OutputActorSpec {

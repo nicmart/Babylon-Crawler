@@ -36,6 +36,10 @@ class ScraperActorSpec extends TestKit(ActorSystem("ScraperActorSpec"))
         }
 
     }
+
+    override def afterAll {
+        TestKit.shutdownActorSystem(system)
+    }
 }
 
 object ScraperActorSpec {
