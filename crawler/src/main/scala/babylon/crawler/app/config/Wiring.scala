@@ -23,17 +23,18 @@ object Wiring {
     lazy val outputFile = new File("cache/pages.json")
     lazy val contentCssSelector = ".main-content,.article,.page-section .column--two-thirds"
     lazy val cssLinkSelectorStack = List(
-        "#haz-mod1 a"
-//        "#ctl00_PlaceHolderMain_BodyMap_ConditionsByAlphabet a",
-//        "#ctl00_PlaceHolderMain_articles a"
+        "#haz-mod1 a",
+        "#ctl00_PlaceHolderMain_BodyMap_ConditionsByAlphabet a",
+        "#ctl00_PlaceHolderMain_articles a"
     )
-    lazy val pagesPerSecond = 10
+    lazy val pagesPerSecond = 5
 
     lazy val initialMessage = Start(startPage, initialState)
 
     lazy val resultToOutput = new CssContentResultToOutput(contentCssSelector)
     lazy val pageListJsonEncoder = implicitly[Encoder[PageList]]
-    lazy val browser = new RandomFailingBrowser(new ScalaScraperBrowser(new JsoupBrowser()), 0.1)
+    //lazy val browser = new RandomFailingBrowser(new ScalaScraperBrowser(new JsoupBrowser()), 0.1)
+    lazy val browser = new ScalaScraperBrowser(new JsoupBrowser())
     lazy val initialState = new LinkExtractorsScraperState(
         browser,
         cssLinkSelectorStack.map(new CssSelectorLinkExtractor(_))
