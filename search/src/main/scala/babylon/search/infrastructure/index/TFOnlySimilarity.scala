@@ -14,7 +14,7 @@ class TFOnlySimilarity extends ClassicSimilarity {
         var numTerms = 0
         if (discountOverlaps) numTerms = state.getLength - state.getNumOverlap
         else numTerms = state.getLength
-        // Slighty prefer short fields
+        // Slighty prefer short fields (standard norm has exponent = 0.5)
         state.getBoost * (1.0 / Math.pow(numTerms, 0.55)).toFloat
     }
 }

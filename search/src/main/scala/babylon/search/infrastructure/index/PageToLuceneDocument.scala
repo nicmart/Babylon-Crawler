@@ -5,18 +5,21 @@ import org.apache.lucene.document.{Document, Field, StringField, TextField}
 
 /**
   * Convert a PageElement to a lucene document for indexing
+  * @param titleSeparator An optional string separator that will be used to split the title into subparts
   */
-object PageToLuceneDocument extends (PageElement => Document) {
+class PageToLuceneDocument(titleSeparator: Option[String]) extends (PageElement => Document) {
     def apply(page: PageElement): Document = {
         val doc = new Document
-        val titleParts = page.title.split(" - ").toSeq
-        val title: String = titleParts.head
-        val subtitle: String = if (titleParts.size == 3) titleParts(1) else ""
-        val fulltitle = titleParts.takeWhile(_.toLowerCase != "nhs choices").mkString(" - ")
+        val titleParts = titleSeparator match {
+            case None => Seq(page.title)
+            case Some(separator) => page.title.split(separator).toSeq
+        }
+        val fulltitle = page.title
 
-        doc.add(new TextField("fulltitle", fulltitle, Field.Store.YES))
-        doc.add(new TextField("title", title, Field.Store.YES))
-        doc.add(new TextField("subtitle", subtitle, Field.Store.YES))
+        titleParts.zipWithIndex foreach { case (part, i) =>
+            doc.add(new TextField(s"title_$i", part, Field.Store.YES))
+        }
+        doc.add(new TextField("fulltitle", page.title, Field.Store.YES))
         doc.add(new TextField("content", page.content, Field.Store.YES))
         doc.add(new StringField("uri", page.url, Field.Store.YES))
 

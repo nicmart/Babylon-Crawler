@@ -21,6 +21,7 @@ object HttpApp extends ServerApp {
     Wiring.indexInitialiser.apply()
     println("Indexing done")
 
+    // Start the web server
     override def server(args: List[String]): Task[Server] =
         BlazeBuilder
             .bindHttp(port, ip)

@@ -8,4 +8,9 @@ object Output {
     val empty: PageList = List()
 }
 
-final case class PageElement(url: String, title: String, content: String, ancestors: List[String])
+final case class PageElement(
+    url: String,
+    title: String,
+    content: String,
+    ancestors: List[String] = List.empty
+)

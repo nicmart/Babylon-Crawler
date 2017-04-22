@@ -12,15 +12,13 @@ import org.apache.lucene.store.Directory
   */
 class LuceneIndexer(
     pageToDocument: PageElement => Document,
-    indexWriterConfig: IndexWriterConfig
+    indexWriter: => IndexWriter
 ) extends Indexer {
-    def index(pageList: PageList, directory: Directory): Unit = {
-        val writer = new IndexWriter(directory, indexWriterConfig)
-
+    def index(pageList: PageList): Unit = {
         for (pageElement <- pageList) {
-            writer.addDocument(pageToDocument(pageElement))
+            indexWriter.addDocument(pageToDocument(pageElement))
         }
 
-        writer.close()
+        indexWriter.close()
     }
 }

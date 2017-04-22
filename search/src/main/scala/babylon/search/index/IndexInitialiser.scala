@@ -8,11 +8,10 @@ import org.apache.lucene.store.Directory
   */
 class IndexInitialiser(
     pageLoader: PageListLoader,
-    indexer: Indexer,
-    directory: Directory
+    indexer: Indexer
 ) extends (() => Unit) {
     def apply(): Unit = {
         val pages = pageLoader.load().getOrElse(List())
-        indexer.index(pages, directory)
+        indexer.index(pages)
     }
 }
