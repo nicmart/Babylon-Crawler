@@ -59,7 +59,7 @@ object Wiring {
     lazy val luceneQueryParser = new QueryParser("title", luceneAnalyzer)
     lazy val searchToLuceneQuery = new LoggingSearchToLuceneQuery(templateSearchToLuceneQuery, logger)
     lazy val templateSearchToLuceneQuery = new TemplateBasedSearchToLuceneQuery(luceneQueryTemplate, luceneQueryParser)
-    lazy val luceneToSearchResponse = new LuceneToSearchResponse(luceneIndexSearcher)
+    lazy val luceneToSearchResponse = new LuceneToSearchResponse(LuceneDocRepository(luceneIndexSearcher))
     lazy val luceneIndexWriter = new IndexWriter(luceneIndexDirectory, luceneIndexConfig)
     lazy val indexer = new LuceneIndexer(pageToLuceneDocument, luceneIndexWriter)
     lazy val logger = LoggerFactory.getLogger("main")

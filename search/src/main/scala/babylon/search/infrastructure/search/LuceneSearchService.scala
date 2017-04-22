@@ -8,7 +8,7 @@ import org.slf4j.Logger
 import scala.concurrent.Future
 
 /**
-  * Implements a search service with a lucene index searcher
+  * Lifts a lucene index searcher to our domain SearchService
   */
 class LuceneSearchService(
     searchToLuceneQuery: SearchQuery => Query,
