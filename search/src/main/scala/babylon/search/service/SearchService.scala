@@ -23,7 +23,10 @@ final case class SearchResponseItem(title: String, uri: String)
 /**
   * The list of results
   */
-final case class SearchResponse(elements: List[SearchResponseItem])
+final case class SearchResponse(
+    query: String,
+    results: List[SearchResponseItem]
+)
 
 object SearchService {
     /**

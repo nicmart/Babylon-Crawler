@@ -26,7 +26,7 @@ object RestService {
             val tryResults = Try {
                 val searchQuery = SearchQuery(query, limit.getOrElse(10))
                 val result = Wiring.searchService.search(searchQuery)
-                result.elements.asJson
+                result.asJson
             }
 
             tryResults match {

@@ -12,8 +12,9 @@ object PageToLuceneDocument extends (PageElement => Document) {
         val titleParts = page.title.split(" - ").toSeq
         val title: String = titleParts.head
         val subtitle: String = if (titleParts.size == 3) titleParts(1) else ""
+        val fulltitle = titleParts.takeWhile(_.toLowerCase != "nhs choices").mkString(" - ")
 
-        doc.add(new TextField("fulltitle", page.title, Field.Store.YES))
+        doc.add(new TextField("fulltitle", fulltitle, Field.Store.YES))
         doc.add(new TextField("title", title, Field.Store.YES))
         doc.add(new TextField("subtitle", subtitle, Field.Store.YES))
         doc.add(new TextField("content", page.content, Field.Store.YES))
