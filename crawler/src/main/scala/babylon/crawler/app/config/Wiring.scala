@@ -15,7 +15,7 @@ import io.circe.Encoder
 import io.circe.generic.auto._
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 
-object Wiring {
+trait Wiring {
     /**
       * Config parameters
       */
@@ -49,3 +49,5 @@ object Wiring {
     lazy val supervisorProps = Props(new SupervisorActor(writer, resultToOutput, maxPagesPerSecond, maxAttemptsPerPage))
     lazy val supervisor = actorSystem.actorOf(supervisorProps, "supervisor")
 }
+
+object Wiring extends Wiring

@@ -1,14 +1,11 @@
 package babylon.search.http
 
-import babylon.search.app.config.Wiring
-import babylon.search.service.SearchQuery
-import io.circe._
+import babylon.search.service.{SearchQuery, SearchService}
 import io.circe.generic.auto._
 import io.circe.syntax._
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.dsl._
-import org.http4s.QueryParamEncoder._
 
 import scala.util.{Failure, Success, Try}
 
@@ -20,21 +17,23 @@ object LimitParam extends OptionalQueryParamDecoderMatcher[Int]("limit")
   */
 object RestService {
 
-    lazy val httpService = HttpService {
+    def httpService(searchService: SearchService) = HttpService {
 
         case GET -> Root / "search" :? QueryParam(query) +& LimitParam(limit) =>
             val tryResults = Try {
                 val searchQuery = SearchQuery(query, limit.getOrElse(10))
-                val result = Wiring.searchService.search(searchQuery)
+                val result = searchService.search(searchQuery)
                 result.asJson
             }
 
             tryResults match {
                 case Success(results) => Ok(results)
                 case Failure(exception) => {
-                    println(exception.getMessage)
+                    println("cazzo")
+                    println(exception.toString)
                     InternalServerError(exception.getMessage)
                 }
             }
+        case _ => Ok("hi")
     }
 }

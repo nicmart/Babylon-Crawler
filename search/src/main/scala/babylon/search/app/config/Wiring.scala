@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory
 /**
   * Created by Nicolò Martini on 20/04/2017.
   */
-object Wiring {
+trait Wiring {
     lazy val cacheFile = new File("cache/pages.json")
     lazy val titleSeparator = " - "
     lazy val luceneQueryTemplate = "title_0:({})^3 title_1:({})^2 fulltitle:({})"
@@ -36,7 +36,7 @@ object Wiring {
         "nhs", "choice"
     )
 
-    lazy val httpService = RestService.httpService
+    lazy val httpService = RestService.httpService(searchService)
     lazy val pageListLoader = new JsonPageListLoader(pageListDecoder, scala.io.Source.fromFile(cacheFile))
     lazy val pageElementRepository = PageElementRepository.fromLoader(pageListLoader)
     lazy val pageListDecoder = implicitly[Decoder[PageList]]
@@ -69,3 +69,5 @@ object Wiring {
     lazy val indexer = new LuceneIndexer(pageToLuceneDocument, luceneIndexWriter)
     lazy val logger = LoggerFactory.getLogger("main")
 }
+
+object Wiring extends Wiring
