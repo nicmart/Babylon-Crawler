@@ -8,11 +8,14 @@ import babylon.search.app.config.Wiring
 import io.circe.Json
 import org.http4s._
 import org.http4s.dsl._
-import org.http4s.circe._
-import io.circe.generic.auto._
 import io.circe.parser._
 import org.scalatest.{Matchers, WordSpec}
 
+/**
+  * This is an integration test for the whole stack
+  * Only the page repository is mocked with a predefined list of pages
+  * (see companion object)
+  */
 class RestServiceSpec extends WordSpec with Matchers {
     import RestServiceSpec._
     TestWiring.indexInitialiser.apply()
@@ -27,7 +30,7 @@ class RestServiceSpec extends WordSpec with Matchers {
             }
             "we query for 'what are the symptoms of cancer?'" in {
                 expectFirst(
-                    "what are the symptoms of cancer",
+                    "what are the symptoms of cancer?",
                     "Cancer - Signs and symptoms - NHS Choices"
                 )
             }
