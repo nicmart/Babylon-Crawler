@@ -12,7 +12,14 @@ import scala.util.Try
   * Extract a list of links from a browser response
   */
 trait LinkExtractor {
+    /**
+      * Extract a list of URI from a page
+      */
     def extractLinks(browserResponse: BrowserResponse): List[URI]
+
+    /**
+      * Limit the links returned by this extractor
+      */
     def limited(n: Int): LinkExtractor = LinkExtractor.limited(this, n)
 }
 
@@ -24,6 +31,9 @@ object LinkExtractor {
         def extractLinks(browserResponse: BrowserResponse): List[URI] = links
     }
 
+    /**
+      * Limit the maximum number of links returned by a linkExtractor
+      */
     def limited(linkExtractor: LinkExtractor, limit: Int) = new LinkExtractor {
         def extractLinks(browserResponse: BrowserResponse): List[URI] =
             linkExtractor.extractLinks(browserResponse).take(limit)

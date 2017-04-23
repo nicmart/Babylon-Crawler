@@ -12,11 +12,10 @@ import scala.util.{Failure, Success, Try}
 object QueryParam extends QueryParamDecoderMatcher[String]("query")
 object LimitParam extends OptionalQueryParamDecoderMatcher[Int]("limit")
 
-/**
-  * Created by Nicolò Martini on 18/04/2017.
-  */
 object RestService {
-
+    /**
+      * Lift a Domain SearchService into an http4s service
+      */
     def httpService(searchService: SearchService) = HttpService {
 
         case GET -> Root / "search" :? QueryParam(query) +& LimitParam(limit) =>

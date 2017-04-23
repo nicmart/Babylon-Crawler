@@ -5,6 +5,7 @@ import org.apache.lucene.document._
 
 /**
   * Convert a PageElement to a lucene document for indexing
+  *
   * @param titleSeparator An optional string separator that will be used to split the title into subparts
   */
 class PageToLuceneDocument(titleSeparator: Option[String]) extends (PageElement => Document) {
@@ -26,6 +27,7 @@ class PageToLuceneDocument(titleSeparator: Option[String]) extends (PageElement 
 
         // We store only the page id
         doc.add(new StringField("page_id", page.hashCode().toString, Field.Store.YES))
+
         doc
     }
 }

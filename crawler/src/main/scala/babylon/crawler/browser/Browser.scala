@@ -14,6 +14,16 @@ trait Browser {
 }
 
 /**
+  *  The response returned by the browser
+  * @param uri The URI of the request
+  * @param document A scalascraper document instance
+  */
+final case class BrowserResponse(
+    uri: URI,
+    document: Document
+)
+
+/**
   * An implementation of Browser that uses a generic ScalaScraper browser instance
   */
 class ScalaScraperBrowser(innerBrowser: scalascraper.browser.Browser) extends Browser {
@@ -40,6 +50,10 @@ class MapBrowser(map: Map[URI, Document]) extends Browser {
     }
 }
 
+/**
+  * Used to increase the number of failures of a browser, for testing purpose.
+  * This will make the inner browser fail with probability @param probability
+  */
 class RandomFailingBrowser(browser:Browser, probability: Double) extends Browser {
     def get(uri: URI)(implicit executionContext: ExecutionContext): Future[BrowserResponse] = {
         if (Math.random() <= probability) {
@@ -49,13 +63,3 @@ class RandomFailingBrowser(browser:Browser, probability: Double) extends Browser
         }
     }
 }
-
-/**
-  *  The response returned by the browser
-  * @param uri The URI of the request
-  * @param document A scalascraper document instance
-  */
-final case class BrowserResponse(
-    uri: URI,
-    document: Document
-)

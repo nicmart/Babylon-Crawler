@@ -5,8 +5,6 @@ import org.apache.lucene.index.IndexReader
 import org.apache.lucene.search.{IndexSearcher, Query, TopDocs}
 import org.slf4j.Logger
 
-import scala.concurrent.Future
-
 /**
   * Lifts a lucene index searcher to our domain SearchService
   */

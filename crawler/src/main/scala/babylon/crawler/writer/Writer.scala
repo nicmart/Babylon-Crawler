@@ -25,7 +25,7 @@ class JsonWriter[T](encoder: Encoder[T], writer: Writer[String]) extends Writer[
 }
 
 /**
-  * Println writer
+  * Println writer, mainly used for debugging
   */
 object PrintlnWriter extends Writer[String] {
     def write(value: String): Unit = println(value)

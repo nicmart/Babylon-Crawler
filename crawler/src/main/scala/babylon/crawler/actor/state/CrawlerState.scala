@@ -6,8 +6,13 @@ import akka.actor.ActorRef
 import babylon.crawler.scraper.Scraper.ScraperFailure
 
 /**
-  * This is the immutable state of the crawler.
-  * It consists of a map of urls -> scrapers, and a set of visited links
+  * This is the immutable state class used by the Crawler Actor
+  * All the URI received are normalised to lowercase.
+  *
+  * @param activeScrapers The scrapers currently active, indexed by url
+  * @param pendingLinks Keep track of the number of scraping attempts per link
+  * @param visitedLinks Keep track of the visited link
+  * @param errors The list of errors collected
   */
 final case class CrawlerState(
     activeScrapers: Map[String, ActorRef] = Map.empty,
@@ -16,7 +21,7 @@ final case class CrawlerState(
     errors: List[ScraperFailure] = List.empty
 ) {
     /**
-      * Add a new active scraper
+      * Add a new scraper actor
       */
     def addScraper(scraper: ActorRef, uri: URI): CrawlerState = {
         val normalisedUri = normaliseUri(uri)
@@ -49,7 +54,7 @@ final case class CrawlerState(
     }
 
     /**
-      * Add an error to the state
+      * Add an error
       */
     def addError(scraperFailure: ScraperFailure): CrawlerState = {
         copy(errors = scraperFailure :: errors)
@@ -73,5 +78,9 @@ final case class CrawlerState(
       */
     def attempts(uri: URI): Int = pendingLinks.getOrElse(normaliseUri(uri), 0)
 
+    /**
+      * Often links are case insensitive and written in different versions.
+      * Here we try to normalise them.
+      */
     private def normaliseUri(uri: URI): String = uri.toString.toLowerCase
 }

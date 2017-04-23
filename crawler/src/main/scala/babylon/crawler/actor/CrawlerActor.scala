@@ -14,6 +14,7 @@ import babylon.crawler.scraper.Scraper.ScraperFailure
   *
   * @param requestsPerSecond The maximum number of active scrapers per second
   * @param timeout After this amount of time of inactivity the system will shutdown.
+  * @param maxAttempts The maximum number of scraping attempts per url
   */
 class CrawlerActor(
     requestsPerSecond: Int = 10,
@@ -40,8 +41,14 @@ class CrawlerActor(
         context.setReceiveTimeout(timeout)
     }
 
+    /**
+      * We are initially in an empty crawler state
+      */
     def receive: Receive = active(CrawlerState())
 
+    /**
+      * Returns a receive function in a new crawler state
+      */
     def active(crawlerState: CrawlerState): Receive = {
 
         /**

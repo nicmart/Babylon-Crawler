@@ -27,7 +27,7 @@ object Scraper {
 }
 
 /**
-  * A Scraper implementation based on a Browser and LinkExtractor instances
+  * A Scraper implementation based on a Browser and a LinkExtractor
   */
 case class LinkExtractorScraper(browser: Browser, linkExtractor: LinkExtractor) extends Scraper {
     def scrape(uri: URI, state: ScraperState): Future[ScraperResult] = {

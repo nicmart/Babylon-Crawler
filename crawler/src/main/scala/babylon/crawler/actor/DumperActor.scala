@@ -6,7 +6,8 @@ import babylon.common.format.PageFormat.PageList
 import babylon.crawler.writer.Writer
 
 /**
-  * Dump the output received using the writer
+  * This actor dumps a page list using a writer
+  * This is used to save the JSON file of the scraped pages
   */
 class DumperActor(writer: Writer[PageList]) extends Actor with ActorLogging {
 

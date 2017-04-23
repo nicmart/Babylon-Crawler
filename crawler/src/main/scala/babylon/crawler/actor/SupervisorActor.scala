@@ -35,19 +35,38 @@ class SupervisorActor(
     val dumper: ActorRef = context.actorOf(Props(new DumperActor(writer)), "dumper")
 
     def receive: Receive = {
+        /**
+          * Initial message to start the crawling
+          */
         case Start(uri, state) =>
             crawler ! StartCrawling(uri, state)
+
+        /**
+          * A page has been successfully scraped
+          */
         case Scraped(result, state) =>
             log.info("Scraped {}", result.uri.toASCIIString)
             output ! AddOutput(result)
+
+        /**
+          * Crawler actor notified us that he is done
+          */
         case CrawlingDone(crawlerState) =>
             logFinalState(crawlerState)
             crawler ! PoisonPill
             output ! GetOutput
+
+        /**
+          * The output is ready to be dumped
+          */
         case OutputReady(pageList) =>
             log.info("Scraped a total of {} pages", pageList.size)
             output ! PoisonPill
             dumper ! Dump(pageList)
+
+        /**
+          * The dump is ready and we can shutdown the system
+          */
         case DumpReady =>
             log.info("Dump ready. Goodbye!")
             dumper ! PoisonPill

@@ -10,6 +10,10 @@ import org.apache.lucene.search.Query
 /**
   * Default implementation of a searchToLuceneQuery.
   * We pass queryParser by name because it is not thread safe!
+  *
+  * @param queryTemplate A Template of a LUCENE query. Every occurence of '{}'
+  *                      will be replace with the content of the query string
+  * @param queryParser The Lucene Query Parser.
   */
 class TemplateBasedSearchToLuceneQuery(
     queryTemplate: String,

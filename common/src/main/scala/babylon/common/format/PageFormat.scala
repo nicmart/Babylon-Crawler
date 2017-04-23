@@ -1,7 +1,11 @@
 package babylon.common.format
 
 /**
-  * Describes the common page format type
+  * The output of the crawling process will be a JSON encoding of the
+  * PageList data type.
+  *
+  * The search component will then load decode the same JSON back into
+  * a PageList instance
   */
 object PageFormat {
     type PageList = List[PageElement]

@@ -1,3 +1,15 @@
+# Babylon Crawler
+This project is composed by 3 SBT subprojects
+ - Common: define common datatype for the scraped pages
+ - Crawler: a web crawler implemented using Akka, Circe, and Scala Scraper
+ - Search: a search engine and a http endpoint implemented using Apache Lucene, http4s and Circe.
+ 
+## Configuration
+Configurations can be found in the objects
+
+    babylon.search.app.config.Wiring
+    babylon.crawler.app.config.Wiring
+ 
 ## How to run the crawler
 You need first to scrape the pages of the target website running
 ```
@@ -38,7 +50,7 @@ getting the response:
 ```
 
 ### Tests
-You can run the tests in the 3 subprojects:
+You can run the tests for all the 3 subprojects:
 ```
 sbt "project common" test
 sbt "project crawler" test

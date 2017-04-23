@@ -1,6 +1,5 @@
 package babylon.search.index
 
-import babylon.common.format.PageFormat
 import babylon.common.repository.PageElementRepository
 
 /**

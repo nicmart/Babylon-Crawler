@@ -10,6 +10,9 @@ import org.http4s.server.{Server, ServerApp}
 import scala.util.Properties.envOrNone
 import scalaz.concurrent.Task
 
+/**
+  * The entry point of the search engine
+  */
 object HttpApp extends ServerApp {
 
     val port : Int              = envOrNone("HTTP_PORT") map (_.toInt) getOrElse 8080

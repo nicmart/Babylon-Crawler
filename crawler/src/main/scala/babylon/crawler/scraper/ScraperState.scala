@@ -13,7 +13,6 @@ trait ScraperState {
     def next(result: ScraperResult): ScraperState
     def scraper: Scraper
     def path: List[URI]
-    def isLeaf: Boolean
 }
 
 /**
@@ -31,7 +30,6 @@ class LinkExtractorsScraperState(
     }
 
     def scraper: Scraper = LinkExtractorScraper(browser, linkExtractors.head)
-    def isLeaf: Boolean = extractors.isEmpty
     def next(result: ScraperResult): ScraperState =
         new LinkExtractorsScraperState(browser, linkExtractors.tail, result.uri :: result.ancestors)
 }
@@ -42,8 +40,7 @@ class LinkExtractorsScraperState(
   */
 case class ConstantScraperState(
     scraper: Scraper,
-    path: List[URI] = Nil,
-    isLeaf: Boolean = true
+    path: List[URI] = Nil
 ) extends ScraperState {
     def next(result: ScraperResult): ScraperState = this
 }
