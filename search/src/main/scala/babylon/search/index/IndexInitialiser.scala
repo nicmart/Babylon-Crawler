@@ -1,17 +1,17 @@
 package babylon.search.index
 
-import babylon.crawler.output.Output
-import babylon.search.loader.PageListLoader
+import babylon.common.format.PageFormat
+import babylon.common.repository.PageElementRepository
 
 /**
   * Build the index using an indexer and a pageLoader
   */
 class IndexInitialiser(
-    pageLoader: PageListLoader,
+    pageElementRepository: PageElementRepository,
     indexer: Indexer
 ) extends (() => Unit) {
     def apply(): Unit = {
-        val pages = pageLoader.load().getOrElse(Output.empty)
+        val pages = pageElementRepository.getAll
         indexer.index(pages)
     }
 }

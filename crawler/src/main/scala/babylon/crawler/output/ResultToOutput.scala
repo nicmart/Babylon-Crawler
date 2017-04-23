@@ -1,6 +1,7 @@
 package babylon.crawler.output
 
-import babylon.crawler.output.Output.PageList
+import babylon.common.format.PageElement
+import babylon.common.format.PageFormat.PageList
 import babylon.crawler.scraper.ScraperResult
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.allText
 import net.ruippeixotog.scalascraper.dsl.DSL._

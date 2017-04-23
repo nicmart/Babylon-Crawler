@@ -1,8 +1,8 @@
 package babylon.search.lucene.index
 
+import babylon.common.format.PageElement
 import babylon.search.index.Indexer
-import babylon.crawler.output.Output.PageList
-import babylon.crawler.output.PageElement
+import babylon.common.format.PageFormat.PageList
 import org.apache.lucene.document.Document
 import org.apache.lucene.index.{IndexWriter, IndexWriterConfig}
 import org.apache.lucene.store.Directory

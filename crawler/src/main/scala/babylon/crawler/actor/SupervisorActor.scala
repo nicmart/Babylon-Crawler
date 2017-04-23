@@ -10,7 +10,7 @@ import babylon.crawler.actor.state.CrawlerState
 import babylon.crawler.scraper.{ScraperResult, ScraperState}
 import babylon.crawler.writer._
 import babylon.crawler.output.ResultToOutput
-import babylon.crawler.output.Output.PageList
+import babylon.common.format.PageFormat.PageList
 
 /**
   * Entry point of our actor system.

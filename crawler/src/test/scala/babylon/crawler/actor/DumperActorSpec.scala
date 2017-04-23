@@ -2,10 +2,10 @@ package babylon.crawler.actor
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
+import babylon.common.format.PageElement
 import babylon.crawler.actor.DumperActor.Dump
 import babylon.crawler.actor.SupervisorActor.DumpReady
-import babylon.crawler.output.Output.PageList
-import babylon.crawler.output.PageElement
+import babylon.common.format.PageFormat.PageList
 import babylon.crawler.writer.Writer
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 

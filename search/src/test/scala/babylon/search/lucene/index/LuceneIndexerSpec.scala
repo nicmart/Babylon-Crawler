@@ -2,7 +2,7 @@ package babylon.search.lucene.index
 
 import java.lang
 
-import babylon.crawler.output.PageElement
+import babylon.common.format.PageElement
 import org.apache.lucene.document.{Document, Field, StringField}
 import org.apache.lucene.index.{IndexWriter, IndexWriterConfig, IndexableField}
 import org.apache.lucene.store.RAMDirectory

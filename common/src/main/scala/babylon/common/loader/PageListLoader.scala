@@ -1,12 +1,10 @@
-package babylon.search.loader
+package babylon.common.loader
 
+import babylon.common.format.PageFormat.PageList
 import java.io.FileReader
 
-import babylon.crawler.output.Output
-import babylon.search.loader.PageListLoader.PageListLoaderFailure
-import babylon.crawler.output.Output.PageList
+import babylon.common.loader.PageListLoader.PageListLoaderFailure
 import io.circe.Decoder
-
 import scala.io.Source
 import io.circe.parser._
 

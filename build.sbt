@@ -14,7 +14,13 @@ lazy val commonSettings = List(
 lazy val common = (project in file("common")).
     settings(
         inThisBuild(commonSettings),
-        name := "Babylon Common"
+        name := "Babylon Common",
+        libraryDependencies ++= List(
+            scalaTest % Test,
+            "io.circe" %% "circe-core" % circeVersion,
+            "io.circe" %% "circe-generic" % circeVersion,
+            "io.circe" %% "circe-parser" % circeVersion
+        )
     )
 
 lazy val crawler = (project in file("crawler")).dependsOn(common).
@@ -26,10 +32,7 @@ lazy val crawler = (project in file("crawler")).dependsOn(common).
             "net.ruippeixotog" %% "scala-scraper" % "1.2.0",
             "com.typesafe.akka" %% "akka-actor" % akkaVersion,
             "com.typesafe.akka" %% "akka-stream" % akkaVersion,
-            "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
-            "io.circe" %% "circe-core" % circeVersion,
-            "io.circe" %% "circe-generic" % circeVersion,
-            "io.circe" %% "circe-parser" % circeVersion
+            "com.typesafe.akka" %% "akka-testkit" % akkaVersion
         )
     )
 
@@ -43,9 +46,6 @@ lazy val search = (project in file ("search")).dependsOn(common).
             "org.http4s"     %% "http4s-circe"        % http4sVersion,
             "org.http4s"     %% "http4s-dsl"          % http4sVersion,
             "ch.qos.logback" %  "logback-classic"     % "1.2.1",
-            "io.circe" %% "circe-core" % circeVersion,
-            "io.circe" %% "circe-generic" % circeVersion,
-            "io.circe" %% "circe-parser" % circeVersion,
             "org.apache.lucene" % "lucene-facet" % luceneVersion,
             "org.apache.lucene" % "lucene-analyzers-common" % luceneVersion,
             "org.apache.lucene" % "lucene-queryparser" % luceneVersion,

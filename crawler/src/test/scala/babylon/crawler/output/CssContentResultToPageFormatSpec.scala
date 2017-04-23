@@ -2,6 +2,7 @@ package babylon.crawler.output
 
 import java.net.URI
 
+import babylon.common.format.{PageElement, PageFormat}
 import babylon.crawler.browser.BrowserResponse
 import babylon.crawler.scraper.ScraperResult
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
@@ -11,9 +12,9 @@ import org.scalatest.{Matchers, WordSpec}
 /**
   * Created by Nicolò Martini on 21/04/2017.
   */
-class CssContentResultToOutputSpec extends WordSpec with Matchers {
+class CssContentResultToPageFormatSpec extends WordSpec with Matchers {
 
-    import CssContentResultToOutputSpec._
+    import CssContentResultToPageFormatSpec._
 
     "A CSS Content Extractor" must {
         "extract the content using a css selector" in {
@@ -31,13 +32,13 @@ class CssContentResultToOutputSpec extends WordSpec with Matchers {
             )
 
             val converter = new CssContentResultToOutput(".foo .bar")
-            converter.fold(Output.empty, scraperResult) shouldBe expectedOutput
+            converter.fold(PageFormat.empty, scraperResult) shouldBe expectedOutput
         }
     }
 
 }
 
-object CssContentResultToOutputSpec {
+object CssContentResultToPageFormatSpec {
     // Used to parse HTML string into Document objects
     def document(html: String): Document = {
         new JsoupBrowser().parseString(html)

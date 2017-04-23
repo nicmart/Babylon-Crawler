@@ -1,6 +1,6 @@
 package babylon.search.index
 
-import babylon.crawler.output.Output.PageList
+import babylon.common.format.PageFormat.PageList
 import org.apache.lucene.store.Directory
 
 /**

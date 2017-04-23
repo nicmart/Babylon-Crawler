@@ -8,7 +8,7 @@ import babylon.crawler.actor.SupervisorActor
 import babylon.crawler.actor.SupervisorActor.Start
 import babylon.crawler.browser.ScalaScraperBrowser
 import babylon.crawler.output.CssContentResultToOutput
-import babylon.crawler.output.Output.PageList
+import babylon.common.format.PageFormat.PageList
 import babylon.crawler.scraper.{CssSelectorLinkExtractor, LinkExtractorsScraperState}
 import babylon.crawler.writer.{JavaFileWriter, JsonWriter}
 import io.circe.Encoder

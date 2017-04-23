@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging}
 import babylon.crawler.actor.OutputActor.{AddOutput, GetOutput}
 import babylon.crawler.actor.SupervisorActor.OutputReady
 import babylon.crawler.scraper.ScraperResult
-import babylon.crawler.output.Output.PageList
+import babylon.common.format.PageFormat.PageList
 import babylon.crawler.output.ResultToOutput
 
 /**

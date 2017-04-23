@@ -1,11 +1,12 @@
-package babylon.search.loader
+package babylon.common.loader
 
-import babylon.crawler.output.Output.PageList
-import babylon.crawler.output.PageElement
-import babylon.search.loader.PageListLoader.PageListLoaderFailure
-import io.circe.{Decoder, DecodingFailure, Encoder, ParsingFailure}
-import org.scalatest.{Matchers, WordSpec}
+import babylon.common.format.PageElement
+import babylon.common.format.PageFormat.PageList
+import babylon.common.loader.PageListLoader.PageListLoaderFailure
+import io.circe.{Decoder, DecodingFailure, ParsingFailure}
 import io.circe.generic.auto._
+import org.scalatest.{Matchers, WordSpec}
+
 
 class JsonPageListLoaderSpec extends WordSpec with Matchers {
     import JsonPageListLoaderSpec._

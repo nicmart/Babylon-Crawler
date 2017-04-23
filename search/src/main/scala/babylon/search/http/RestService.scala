@@ -31,7 +31,10 @@ object RestService {
 
             tryResults match {
                 case Success(results) => Ok(results)
-                case Failure(exception) => BadRequest(exception.getMessage)
+                case Failure(exception) => {
+                    println(exception.getMessage)
+                    InternalServerError(exception.getMessage)
+                }
             }
     }
 }

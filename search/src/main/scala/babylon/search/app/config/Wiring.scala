@@ -6,8 +6,9 @@ import scala.collection.JavaConverters._
 import babylon.search.index.IndexInitialiser
 import babylon.search.lucene.index.{LuceneIndexer, PageToLuceneDocument, TFOnlySimilarity}
 import babylon.search.lucene.search._
-import babylon.search.loader.JsonPageListLoader
-import babylon.crawler.output.Output.PageList
+import babylon.common.format.PageFormat.PageList
+import babylon.common.loader.JsonPageListLoader
+import babylon.common.repository.PageElementRepository
 import babylon.search.http.RestService
 import io.circe.Decoder
 import io.circe.generic.auto._
@@ -37,13 +38,14 @@ object Wiring {
 
     lazy val httpService = RestService.httpService
     lazy val pageListLoader = new JsonPageListLoader(pageListDecoder, scala.io.Source.fromFile(cacheFile))
+    lazy val pageElementRepository = PageElementRepository.fromLoader(pageListLoader)
     lazy val pageListDecoder = implicitly[Decoder[PageList]]
     lazy val searchService = new LuceneSearchService(
         searchToLuceneQuery,
         luceneIndexSearcher,
         luceneToSearchResponse
     )
-    lazy val indexInitialiser = new IndexInitialiser(pageListLoader, indexer)
+    lazy val indexInitialiser = new IndexInitialiser(pageElementRepository, indexer)
     lazy val pageToLuceneDocument = new PageToLuceneDocument(Some(titleSeparator))
 
     lazy val luceneIndexDirectory = new RAMDirectory
@@ -61,7 +63,8 @@ object Wiring {
     def luceneQueryParser = new QueryParser("title", luceneAnalyzer)
     lazy val searchToLuceneQuery = new LoggingSearchToLuceneQuery(templateSearchToLuceneQuery, logger)
     lazy val templateSearchToLuceneQuery = new TemplateBasedSearchToLuceneQuery(luceneQueryTemplate, luceneQueryParser)
-    lazy val luceneToSearchResponse = new LuceneToSearchResponse(LuceneDocRepository(luceneIndexSearcher))
+    lazy val luceneDocRepository = LuceneDocRepository(luceneIndexSearcher)
+    lazy val luceneToSearchResponse = new LuceneToSearchResponse(luceneDocRepository, pageElementRepository)
     lazy val luceneIndexWriter = new IndexWriter(luceneIndexDirectory, luceneIndexConfig)
     lazy val indexer = new LuceneIndexer(pageToLuceneDocument, luceneIndexWriter)
     lazy val logger = LoggerFactory.getLogger("main")

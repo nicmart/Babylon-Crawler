@@ -2,7 +2,7 @@ package babylon.crawler.actor
 
 import akka.actor.{Actor, ActorLogging}
 import babylon.crawler.actor.SupervisorActor.DumpReady
-import babylon.crawler.output.Output.PageList
+import babylon.common.format.PageFormat.PageList
 import babylon.crawler.writer.Writer
 
 /**

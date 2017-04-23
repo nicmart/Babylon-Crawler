@@ -1,6 +1,6 @@
 package babylon.search.lucene.index
 
-import babylon.crawler.output.PageElement
+import babylon.common.format.PageElement
 import org.scalatest.{Matchers, WordSpec}
 
 class PageToLuceneDocumentSpec extends WordSpec with Matchers {
@@ -24,11 +24,10 @@ class PageToLuceneDocumentSpec extends WordSpec with Matchers {
             val doc = pageToLuceneDocument(pageElement)
             doc.get("fulltitle") shouldBe "Title / Subtitle / Subsubtitle"
         }
-        "save the other fields" in {
+        "save the page id" in {
             val pageToLuceneDocument = new PageToLuceneDocument(Some(" / "))
             val doc = pageToLuceneDocument(pageElement)
-            doc.get("uri") shouldBe "http://test"
-            doc.get("content") shouldBe "My Content"
+            doc.get("page_id").toInt shouldBe pageElement.hashCode()
         }
     }
 }

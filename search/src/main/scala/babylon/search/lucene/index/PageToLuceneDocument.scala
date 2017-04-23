@@ -1,7 +1,7 @@
 package babylon.search.lucene.index
 
-import babylon.crawler.output.PageElement
-import org.apache.lucene.document.{Document, Field, StringField, TextField}
+import babylon.common.format.PageElement
+import org.apache.lucene.document._
 
 /**
   * Convert a PageElement to a lucene document for indexing
@@ -16,13 +16,16 @@ class PageToLuceneDocument(titleSeparator: Option[String]) extends (PageElement 
         }
         val fulltitle = page.title
 
+        // Store all the parts of the title in fields like "title_n"
         titleParts.zipWithIndex foreach { case (part, i) =>
-            doc.add(new TextField(s"title_$i", part, Field.Store.YES))
+            doc.add(new TextField(s"title_$i", part, Field.Store.NO))
         }
-        doc.add(new TextField("fulltitle", page.title, Field.Store.YES))
-        doc.add(new TextField("content", page.content, Field.Store.YES))
-        doc.add(new StringField("uri", page.url, Field.Store.YES))
 
+        // Store the full title in a separate field
+        doc.add(new TextField("fulltitle", page.title, Field.Store.NO))
+
+        // We store only the page id
+        doc.add(new StringField("page_id", page.hashCode().toString, Field.Store.YES))
         doc
     }
 }

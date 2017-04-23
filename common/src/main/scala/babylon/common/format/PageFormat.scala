@@ -1,9 +1,9 @@
-package babylon.crawler.output
+package babylon.common.format
 
 /**
-  * Created by Nicolò Martini on 17/04/2017.
+  * Describes the common page format type
   */
-object Output {
+object PageFormat {
     type PageList = List[PageElement]
     val empty: PageList = List()
 }

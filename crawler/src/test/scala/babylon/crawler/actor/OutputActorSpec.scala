@@ -4,10 +4,11 @@ import java.net.URI
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
+import babylon.common.format.PageElement
 import babylon.crawler.actor.OutputActor.{AddOutput, GetOutput}
 import babylon.crawler.actor.SupervisorActor.OutputReady
-import babylon.crawler.output.Output.PageList
-import babylon.crawler.output.{PageElement, ResultToOutput}
+import babylon.common.format.PageFormat.PageList
+import babylon.crawler.output.ResultToOutput
 import babylon.crawler.scraper.ScraperResult
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.model.{Document, Element}

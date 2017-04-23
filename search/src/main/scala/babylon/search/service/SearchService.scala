@@ -18,7 +18,11 @@ final case class SearchQuery(query: String, limit: Int)
 /**
   * A single result
   */
-final case class SearchResponseItem(title: String, uri: String)
+final case class SearchResponseItem(
+    title: String,
+    uri: String,
+    ancestors: List[String] = List.empty
+)
 
 /**
   * The list of results

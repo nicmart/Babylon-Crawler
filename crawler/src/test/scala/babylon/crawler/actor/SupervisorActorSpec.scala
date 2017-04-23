@@ -5,7 +5,7 @@ import java.net.URI
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import babylon.crawler.actor.SupervisorActor.{DumpReady, Start}
-import babylon.crawler.output.Output.PageList
+import babylon.common.format.PageFormat.PageList
 import babylon.crawler.scraper.ScraperResult
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
