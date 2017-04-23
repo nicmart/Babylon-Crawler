@@ -6,7 +6,7 @@ import java.net.URI
 import akka.actor.{ActorSystem, Props}
 import babylon.crawler.actor.SupervisorActor
 import babylon.crawler.actor.SupervisorActor.Start
-import babylon.crawler.browser.{RandomFailingBrowser, ScalaScraperBrowser}
+import babylon.crawler.browser.ScalaScraperBrowser
 import babylon.crawler.output.CssContentResultToOutput
 import babylon.crawler.output.Output.PageList
 import babylon.crawler.scraper.{CssSelectorLinkExtractor, LinkExtractorsScraperState}
@@ -31,7 +31,7 @@ object Wiring {
     lazy val maxAttemptsPerPage = 4
 
     /**
-      * Services
+      * Components
       */
     lazy val initialMessage = Start(startPage, initialState)
     lazy val resultToOutput = new CssContentResultToOutput(contentCssSelector)

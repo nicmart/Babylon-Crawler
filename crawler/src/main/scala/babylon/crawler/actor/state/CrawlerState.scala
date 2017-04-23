@@ -11,7 +11,7 @@ import babylon.crawler.scraper.Scraper.ScraperFailure
   */
 final case class CrawlerState(
     activeScrapers: Map[String, ActorRef] = Map.empty,
-    pendingLinks: Map[String, Int] = Map.empty.withDefaultValue(0),
+    pendingLinks: Map[String, Int] = Map.empty,
     visitedLinks: Set[String] = Set.empty,
     errors: List[ScraperFailure] = List.empty
 ) {
@@ -21,9 +21,9 @@ final case class CrawlerState(
     def addScraper(scraper: ActorRef, uri: URI): CrawlerState = {
         val normalisedUri = normaliseUri(uri)
         copy(
-            activeScrapers = activeScrapers + (normaliseUri(uri) -> scraper),
+            activeScrapers = activeScrapers + (normalisedUri -> scraper),
             pendingLinks = pendingLinks.updated(
-                normaliseUri(uri),
+                normalisedUri,
                 pendingLinks.getOrElse(normalisedUri, 0) + 1
             )
         )
@@ -36,8 +36,7 @@ final case class CrawlerState(
         val normalisedUri = normaliseUri(uri)
         copy(
             visitedLinks = visitedLinks + normalisedUri,
-            activeScrapers = activeScrapers - normalisedUri,
-            pendingLinks = pendingLinks.updated(normalisedUri, 0)
+            activeScrapers = activeScrapers - normalisedUri
         )
     }
 

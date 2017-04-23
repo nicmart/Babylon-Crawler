@@ -4,8 +4,8 @@ import java.io.File
 
 import scala.collection.JavaConverters._
 import babylon.search.index.IndexInitialiser
-import babylon.search.infrastructure.index.{LuceneIndexer, PageToLuceneDocument, TFOnlySimilarity}
-import babylon.search.infrastructure.search._
+import babylon.search.lucene.index.{LuceneIndexer, PageToLuceneDocument, TFOnlySimilarity}
+import babylon.search.lucene.search._
 import babylon.search.loader.JsonPageListLoader
 import babylon.crawler.output.Output.PageList
 import babylon.search.http.RestService
@@ -56,7 +56,8 @@ object Wiring {
         searcher.setSimilarity(luceneSimilarity)
         searcher
     }
-    lazy val luceneQueryParser = new QueryParser("title", luceneAnalyzer)
+    // Query parser is not thread-safe, and we need a new instance every time
+    def luceneQueryParser = new QueryParser("title", luceneAnalyzer)
     lazy val searchToLuceneQuery = new LoggingSearchToLuceneQuery(templateSearchToLuceneQuery, logger)
     lazy val templateSearchToLuceneQuery = new TemplateBasedSearchToLuceneQuery(luceneQueryTemplate, luceneQueryParser)
     lazy val luceneToSearchResponse = new LuceneToSearchResponse(LuceneDocRepository(luceneIndexSearcher))

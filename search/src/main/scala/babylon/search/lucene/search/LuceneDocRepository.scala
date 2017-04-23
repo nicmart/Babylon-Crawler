@@ -1,4 +1,4 @@
-package babylon.search.infrastructure.search
+package babylon.search.lucene.search
 
 import org.apache.lucene.document.Document
 import org.apache.lucene.search.IndexSearcher

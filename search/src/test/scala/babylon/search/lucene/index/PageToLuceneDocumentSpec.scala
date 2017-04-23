@@ -1,4 +1,4 @@
-package babylon.search.infrastructure.index
+package babylon.search.lucene.index
 
 import babylon.crawler.output.PageElement
 import org.scalatest.{Matchers, WordSpec}

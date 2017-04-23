@@ -47,7 +47,7 @@ case class LinkExtractorScraper(browser: Browser, linkExtractor: LinkExtractor) 
 
 /**
   * Implementation based on a static map
-  * Mainly used for test purposes
+  * Mainly used for testing purposes
   */
 class MapScraper(map: Map[URI, ScraperResult]) extends Scraper {
     def scrape(uri: URI, state: ScraperState): Future[ScraperResult] = {

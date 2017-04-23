@@ -1,4 +1,4 @@
-package babylon.search.infrastructure.index
+package babylon.search.lucene.index
 
 import babylon.search.index.Indexer
 import babylon.crawler.output.Output.PageList

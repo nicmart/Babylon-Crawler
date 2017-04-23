@@ -1,4 +1,4 @@
-package babylon.search.infrastructure.search
+package babylon.search.lucene.search
 
 import babylon.search.service.{SearchQuery, SearchResponse, SearchService}
 import org.apache.lucene.index.IndexReader

@@ -1,4 +1,4 @@
-package babylon.search.infrastructure.search
+package babylon.search.lucene.search
 
 import babylon.search.service.SearchQuery
 import org.apache.lucene.search.Query

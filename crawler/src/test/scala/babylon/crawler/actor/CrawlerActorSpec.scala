@@ -5,11 +5,12 @@ import java.net.URI
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import babylon.crawler.actor.CrawlerActor.StartCrawling
-import babylon.crawler.actor.ScraperActor.Scrape
 import babylon.crawler.actor.SupervisorActor.{CrawlingDone, Scraped}
-import babylon.crawler.scraper.{ConstantScraperState, MapScraper, ScraperResult}
+import babylon.crawler.scraper._
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
+
+import scala.concurrent.Future
 import scala.concurrent.duration._
 
 class CrawlerActorSpec extends TestKit(ActorSystem("CrawlerActorSpec"))
@@ -47,8 +48,28 @@ class CrawlerActorSpec extends TestKit(ActorSystem("CrawlerActorSpec"))
             val crawler = parent.childActorOf(Props(new CrawlerActor(100, 10.seconds)))
             crawler ! StartCrawling(uri, scraperState)
             parent.expectMsgPF() {
+                // We expect no errors
                 case CrawlingDone(crawlerState) if crawlerState.errors.nonEmpty  => true
             }
+        }
+
+        "reschedule scraping in case of failures" in {
+            val uri = new URI("http://test1")
+            val parent = TestProbe()
+            val crawler = parent.childActorOf(Props(new CrawlerActor(100, 10.seconds, maxAttempts = 3)))
+            crawler ! StartCrawling(uri, ConstantScraperState(scraperFailingAtFirst2Tries))
+            parent.expectMsgType[Scraped]
+            parent.expectMsgType[Scraped]
+            parent.expectMsgType[Scraped]
+            parent.expectMsgType[CrawlingDone]
+        }
+
+        "not try to scrape an URI more than maxAttempts times" in {
+            val uri = new URI("http://test1")
+            val parent = TestProbe()
+            val crawler = parent.childActorOf(Props(new CrawlerActor(100, 10.seconds, maxAttempts = 2)))
+            crawler ! StartCrawling(uri, ConstantScraperState(scraperFailingAtFirst2Tries))
+            parent.expectMsgType[CrawlingDone]
         }
     }
 
@@ -84,4 +105,21 @@ object CrawlerActorSpec {
     val scraper = new MapScraper(scraperResults)
     val scraperState = ConstantScraperState(scraper)
 
+    def scraperStack(scrapers: Iterable[Scraper]) = new Scraper {
+        assert(scrapers.nonEmpty)
+        var scraperStack = scrapers
+        def scrape(uri: URI, state: ScraperState): Future[ScraperResult] = {
+            val current = scraperStack.head
+            if (scraperStack.size > 1) {
+                scraperStack = scraperStack.tail
+            }
+            current.scrape(uri, state)
+        }
+    }
+
+    def scraperFailingAtFirst2Tries = scraperStack(List(
+        new MapScraper(Map.empty),
+        new MapScraper(Map.empty),
+        scraper
+    ))
 }

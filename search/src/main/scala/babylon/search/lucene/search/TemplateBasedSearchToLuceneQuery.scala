@@ -1,4 +1,4 @@
-package babylon.search.infrastructure.search
+package babylon.search.lucene.search
 
 import java.util.regex.Matcher
 
@@ -9,10 +9,11 @@ import org.apache.lucene.search.Query
 
 /**
   * Default implementation of a searchToLuceneQuery.
+  * We pass queryParser by name because it is not thread safe!
   */
 class TemplateBasedSearchToLuceneQuery(
     queryTemplate: String,
-    queryParser: QueryParser
+    queryParser: => QueryParser
 ) extends (SearchQuery => Query) {
     def apply(searchQuery: SearchQuery): Query = {
         val queryString = Matcher.quoteReplacement(QueryParserUtil.escape(searchQuery.query))

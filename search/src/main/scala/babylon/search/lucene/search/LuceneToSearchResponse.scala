@@ -1,4 +1,4 @@
-package babylon.search.infrastructure.search
+package babylon.search.lucene.search
 
 import babylon.search.service.{SearchQuery, SearchResponse, SearchResponseItem}
 import org.apache.lucene.search.{IndexSearcher, TopDocs}

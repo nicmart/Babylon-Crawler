@@ -1,4 +1,4 @@
-package babylon.search.infrastructure.index
+package babylon.search.lucene.index
 
 import java.lang
 
