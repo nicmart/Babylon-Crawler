@@ -29,6 +29,7 @@ trait Wiring {
     )
     lazy val maxPagesPerSecond = 5
     lazy val maxAttemptsPerPage = 4
+    lazy val maxLinksPerPage = 1000
 
     /**
       * Components
@@ -40,7 +41,7 @@ trait Wiring {
     lazy val browser = new ScalaScraperBrowser(new JsoupBrowser())
     lazy val initialState = new LinkExtractorsScraperState(
         browser,
-        cssLinkSelectorStack.map(new CssSelectorLinkExtractor(_))
+        cssLinkSelectorStack.map(new CssSelectorLinkExtractor(_).limited(maxLinksPerPage))
     )
     lazy val javaFileWriter =  new JavaFileWriter(new FileWriter(outputFile))
     lazy val writer = new JsonWriter(pageListJsonEncoder, javaFileWriter)

@@ -13,6 +13,7 @@ import scala.util.Try
   */
 trait LinkExtractor {
     def extractLinks(browserResponse: BrowserResponse): List[URI]
+    def limited(n: Int): LinkExtractor = LinkExtractor.limited(this, n)
 }
 
 object LinkExtractor {
@@ -21,6 +22,11 @@ object LinkExtractor {
       */
     def constant(links: List[URI]): LinkExtractor = new LinkExtractor {
         def extractLinks(browserResponse: BrowserResponse): List[URI] = links
+    }
+
+    def limited(linkExtractor: LinkExtractor, limit: Int) = new LinkExtractor {
+        def extractLinks(browserResponse: BrowserResponse): List[URI] =
+            linkExtractor.extractLinks(browserResponse).take(limit)
     }
 
     /**
