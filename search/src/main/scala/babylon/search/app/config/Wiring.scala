@@ -13,7 +13,7 @@ import io.circe.Decoder
 import io.circe.generic.auto._
 import org.apache.lucene.analysis.CharArraySet
 import org.apache.lucene.analysis.en.EnglishAnalyzer
-import org.apache.lucene.index.{DirectoryReader, FieldInvertState, IndexWriter, IndexWriterConfig}
+import org.apache.lucene.index.{DirectoryReader, IndexWriter, IndexWriterConfig}
 import org.apache.lucene.queryparser.classic.QueryParser
 import org.apache.lucene.search.IndexSearcher
 import org.apache.lucene.store.RAMDirectory
@@ -31,7 +31,8 @@ object Wiring {
         "for", "if", "in", "into", "is", "it",
         "no", "not", "of", "on", "or", "such",
         "that", "the", "their", "then", "there", "these",
-        "they", "this", "to", "was", "will", "with", "nhs", "choice"
+        "they", "this", "to", "was", "will", "with",
+        "nhs", "choice"
     )
 
     lazy val httpService = RestService.httpService

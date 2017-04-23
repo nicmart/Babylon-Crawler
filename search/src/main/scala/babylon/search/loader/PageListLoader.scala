@@ -2,31 +2,38 @@ package babylon.search.loader
 
 import java.io.FileReader
 
-import babylon.search.loader.PageListLoader.PageListLoaderException
+import babylon.crawler.output.Output
+import babylon.search.loader.PageListLoader.PageListLoaderFailure
 import babylon.crawler.output.Output.PageList
 import io.circe.Decoder
 
 import scala.io.Source
-import io.circe._
 import io.circe.parser._
 
 /**
-  * Generate a page list our of nothing (side-effects!)
+  * Generate a page list out of nothing (side-effects!)
   */
 trait PageListLoader {
-    def load(): Either[PageListLoaderException, PageList]
+    def load(): PageListLoader.Result
 }
 
 object PageListLoader {
-    case class PageListLoaderException(exception: Exception) extends Exception
+    type Result = Either[PageListLoaderFailure, PageList]
+    case class PageListLoaderFailure(exception: Exception) extends Exception
 }
 
+/**
+  * Loads a json sctring from a scala IO Source and decode it with a CIRCE decoder
+  */
 class JsonPageListLoader(jsonDecoder: Decoder[PageList], source: Source) extends PageListLoader {
-    def load(): Either[PageListLoaderException, PageList] = {
+    def load(): PageListLoader.Result = {
         val jsonString = source.getLines().mkString("\n")
-        parse(jsonString) match {
-            case Left(failure) => Left(PageListLoaderException(failure))
-            case Right(json) => Right(jsonDecoder.decodeJson(json).getOrElse(List()))
-        }
+        parse(jsonString).fold (
+            failure => Left(PageListLoaderFailure(failure)),
+            json => jsonDecoder.decodeJson(json).fold(
+                failure => Left(PageListLoaderFailure(failure)),
+                Right(_)
+            )
+        )
     }
 }
