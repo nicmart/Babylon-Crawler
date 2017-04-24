@@ -27,11 +27,7 @@ object RestService {
 
             tryResults match {
                 case Success(results) => Ok(results)
-                case Failure(exception) => {
-                    println("cazzo")
-                    println(exception.toString)
-                    InternalServerError(exception.getMessage)
-                }
+                case Failure(exception) => InternalServerError(exception.getMessage)
             }
         case _ => Ok("hi")
     }
